@@ -1,0 +1,62 @@
+[
+  {
+    "asin": "B0SNAPSHOT1",
+    "retailer": "amazon",
+    "title": "Example — replace with your Amazon export row",
+    "image": "https://via.placeholder.com/400?text=Amazon+SKU",
+    "category": "Grocery & Gourmet (Amazon)",
+    "latestPrice": "$12.99",
+    "latestRating": 4.5,
+    "latestReviewCount": 842,
+    "snapshots": [
+      {
+        "asin": "B0SNAPSHOT1",
+        "sourceType": "Best Sellers",
+        "rank": 55,
+        "price": 12.99,
+        "rating": 4.5,
+        "reviewCount": 800,
+        "capturedAt": "2026-04-10T15:00:00.000Z"
+      },
+      {
+        "asin": "B0SNAPSHOT1",
+        "sourceType": "Movers & Shakers",
+        "rank": 48,
+        "price": 12.99,
+        "rating": 4.5,
+        "reviewCount": 842,
+        "capturedAt": "2026-04-16T15:00:00.000Z"
+      }
+    ]
+  },
+  {
+    "asin": "YMB-DEMO-1001",
+    "retailer": "yamibuy",
+    "title": "Example — Yamibuy row (paste real title / image from your scrape or CSV)",
+    "image": "https://via.placeholder.com/400?text=Yamibuy+SKU",
+    "category": "Snacks — Yamibuy",
+    "latestPrice": "$11.50",
+    "latestRating": 4.7,
+    "latestReviewCount": 156,
+    "snapshots": [
+      {
+        "asin": "YMB-DEMO-1001",
+        "sourceType": "Search",
+        "rank": 3,
+        "price": 11.5,
+        "rating": 4.7,
+        "reviewCount": 150,
+        "capturedAt": "2026-04-12T15:00:00.000Z"
+      },
+      {
+        "asin": "YMB-DEMO-1001",
+        "sourceType": "Search",
+        "rank": 2,
+        "price": 11.5,
+        "rating": 4.7,
+        "reviewCount": 156,
+        "capturedAt": "2026-04-16T15:00:00.000Z"
+      }
+    ]
+  }
+]

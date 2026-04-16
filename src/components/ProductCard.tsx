@@ -32,6 +32,9 @@ export function ProductCard({ product, muted }: ProductCardProps) {
       </div>
       <div className={`flex flex-1 flex-col ${muted ? "p-3.5" : "p-4"}`}>
         <div className="flex flex-wrap gap-1.5">
+          <AlertBadge kind="tag">
+            {product.retailer === "yamibuy" ? "Yamibuy" : "Amazon"}
+          </AlertBadge>
           {product.activeSources.map((s) => (
             <AlertBadge key={s} kind="tag">
               {s}

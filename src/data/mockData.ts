@@ -1,11 +1,8 @@
-/** Barrel — domain types + catalog (snapshots → opportunity → enriched products). */
+/** Barrel — types, aggregates, and catalog helpers (live data loads via /api/feed). */
 export * from "./types";
 export type { EnrichedProduct } from "./catalog";
+export { findEnrichedByAsin, getEnrichedByAsin } from "./catalog";
 export {
-  enrichedProducts,
-  getEnrichedByAsin,
-  getProductById,
-  categoryTrends,
-  dashboardKpis,
-  watchlistEntries,
-} from "./catalog";
+  buildCategoryTrendsFromProducts,
+  buildDashboardKpisFromProducts,
+} from "./aggregates";

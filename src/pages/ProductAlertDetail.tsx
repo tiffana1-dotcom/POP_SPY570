@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getEnrichedByAsin } from "@/data/mockData";
+import { useTrendFeed } from "@/context/TrendFeedContext";
 import { AlertBadge } from "@/components/AlertBadge";
 import { EmailModal } from "@/components/EmailModal";
 import { RecommendationPanel } from "@/components/RecommendationPanel";
@@ -8,13 +8,24 @@ import type { ProductSnapshot } from "@/data/mockData";
 
 export function ProductAlertDetail() {
   const { id } = useParams();
-  const product = id ? getEnrichedByAsin(id) : undefined;
+  const { getProduct, loading } = useTrendFeed();
+  const product = id ? getProduct(id) : undefined;
   const [emailOpen, setEmailOpen] = useState(false);
+
+  if (loading && !product) {
+    return (
+      <div className="rounded-xl border border-slate-200 bg-white p-10 text-center shadow-card text-sm text-slate-600">
+        Loading product…
+      </div>
+    );
+  }
 
   if (!product) {
     return (
       <div className="rounded-xl border border-slate-200 bg-white p-10 text-center shadow-card">
-        <p className="text-sm text-slate-600">Product not found.</p>
+        <p className="text-sm text-slate-600">
+          Product not found in the current feed.
+        </p>
         <Link
           to="/"
           className="mt-4 inline-block text-sm font-medium text-slate-900 underline-offset-4 hover:underline"
@@ -71,6 +82,7 @@ export function ProductAlertDetail() {
                     {product.title}
                   </h1>
                   <p className="mt-1 text-xs font-mono text-slate-500">
+                    {product.retailer === "yamibuy" ? "Yamibuy SKU · " : "ASIN · "}
                     {product.asin}
                   </p>
                   <p className="mt-1 text-sm text-slate-500">{product.category}</p>
@@ -252,8 +264,8 @@ function SnapshotHistoryTable({ rows }: { rows: ProductSnapshot[] }) {
         Snapshot history
       </h2>
       <p className="mt-1 text-xs text-slate-500">
-        Recent captures used for Opportunity Score — multiple days and lists
-        reduce noise from one-off spikes.
+        Captures from the current feed pull. Schedule recurring jobs to
+        build true multi-day history in your database.
       </p>
       <div className="mt-4 overflow-x-auto rounded-lg border border-slate-100">
         <table className="min-w-[640px] w-full text-left text-sm">

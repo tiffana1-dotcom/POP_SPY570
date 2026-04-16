@@ -137,6 +137,9 @@ celerybeat.pid
 # Environments
 .env
 .envrc
+
+# Optional local product feed (JSON); example stays in repo
+server/data/feed-snapshot.json
 .venv
 env/
 venv/

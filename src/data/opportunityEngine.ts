@@ -19,6 +19,7 @@ export interface OpportunityResult {
   moversHits: number;
   bestSellersHits: number;
   newReleasesHits: number;
+  searchHits: number;
   improvingSnapshotPairs: number;
   saturatedIncumbent: boolean;
 }
@@ -56,6 +57,7 @@ export function computeOpportunity(
       moversHits: 0,
       bestSellersHits: 0,
       newReleasesHits: 0,
+      searchHits: 0,
       improvingSnapshotPairs: 0,
       saturatedIncumbent: true,
     };
@@ -102,6 +104,7 @@ export function computeOpportunity(
   const moversHits = countSource(use, "Movers & Shakers");
   const bestSellersHits = countSource(use, "Best Sellers");
   const newReleasesHits = countSource(use, "New Releases");
+  const searchHits = countSource(use, "Search");
   const distinctSources = new Set(use.map((x) => x.sourceType)).size;
 
   const totalSnaps = use.length;
@@ -122,7 +125,8 @@ export function computeOpportunity(
   );
   const signalMixScore = Math.min(
     16,
-    distinctSources * 5 + Math.min(6, (moversHits + newReleasesHits) * 1.2),
+    distinctSources * 5 +
+      Math.min(6, (moversHits + newReleasesHits + searchHits) * 1.0),
   );
   const repeatSignalScore = Math.min(12, (totalSnaps - uniqueSignalDays) * 2);
   const reviewScore = Math.min(18, reviewGrowth7d * 0.65);
@@ -172,6 +176,11 @@ export function computeOpportunity(
       `Also appeared in New Releases — novelty tailwind alongside momentum.`,
     );
   }
+  if (searchHits >= 1) {
+    explanationBullets.push(
+      `Matched Amazon search results for your tracked queries — extra discovery beyond charts.`,
+    );
+  }
   if (distinctSources >= 2) {
     explanationBullets.push(
       `Surfaced across ${distinctSources} different Amazon signal lists — corroboration matters for buyers.`,
@@ -207,6 +216,7 @@ export function computeOpportunity(
     moversHits,
     bestSellersHits,
     newReleasesHits,
+    searchHits,
     improvingSnapshotPairs: improvingPairs,
     saturatedIncumbent,
   };

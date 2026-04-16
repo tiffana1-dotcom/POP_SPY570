@@ -1,33 +1,29 @@
-import { useMemo, useState } from "react";
-import {
-  categoryTrends,
-  dashboardKpis,
-  enrichedProducts,
-  type EnrichedProduct,
-} from "@/data/mockData";
+import { useEffect, useMemo, useState } from "react";
+import type { EnrichedProduct } from "@/data/mockData";
+import { useTrendFeed } from "@/context/TrendFeedContext";
 import { KPIStatCard } from "@/components/KPIStatCard";
 import { ProductCard } from "@/components/ProductCard";
 import { TopOpportunitiesWeek } from "@/components/TopOpportunitiesWeek";
 import { TrendCard } from "@/components/TrendCard";
+import { RetailPlanPanel } from "@/components/RetailPlanPanel";
+import { GptAnalyzePanel } from "@/components/GptAnalyzePanel";
+import { mergeCategoryOptions } from "@/data/shelfCategories";
 
-const categories = [
-  "All categories",
-  "Functional beverages",
-  "Herbal tea",
-  "Mushroom coffee",
-  "Collagen snacks",
-  "Vitamins / supplements",
-  "OTC wellness products",
+const markets = [
+  "All markets",
+  "Amazon US",
+  "Yamibuy",
+  "Amazon CA",
+  "Amazon UK",
+  "Amazon MX",
 ] as const;
-
-const markets = ["All markets", "Amazon US", "Amazon CA", "Amazon UK", "Amazon MX"] as const;
 
 const timeRanges = ["Last 24 hours", "Last 7 days", "Last 30 days"] as const;
 
 function filterProducts(
   list: EnrichedProduct[],
   query: string,
-  category: (typeof categories)[number],
+  category: string,
   market: (typeof markets)[number],
 ): EnrichedProduct[] {
   const q = query.trim().toLowerCase();
@@ -35,7 +31,11 @@ function filterProducts(
     const catOk =
       category === "All categories" ? true : p.category === category;
     const marketOk =
-      market === "All markets" ? true : p.buyer.marketplaces.includes(market);
+      market === "All markets"
+        ? true
+        : market === "Yamibuy"
+          ? (p.retailer ?? "amazon") === "yamibuy"
+          : p.buyer.marketplaces.includes(market);
     const text = `${p.title} ${p.category}`.toLowerCase();
     const searchOk = q.length === 0 ? true : text.includes(q);
     return catOk && marketOk && searchOk;
@@ -43,16 +43,39 @@ function filterProducts(
 }
 
 export function Dashboard() {
+  const {
+    products,
+    shelfCategories,
+    categoryTrends,
+    dashboardKpis,
+    loading,
+    error,
+    refetch,
+  } = useTrendFeed();
+
   const [query, setQuery] = useState("");
-  const [category, setCategory] =
-    useState<(typeof categories)[number]>("All categories");
+  const [category, setCategory] = useState("All categories");
   const [market, setMarket] = useState<(typeof markets)[number]>("All markets");
   const [timeRange, setTimeRange] =
     useState<(typeof timeRanges)[number]>("Last 7 days");
 
+  const categoryOptions = useMemo(() => {
+    const merged = mergeCategoryOptions(
+      products.map((p) => p.category),
+      shelfCategories,
+    );
+    return ["All categories", ...merged];
+  }, [products, shelfCategories]);
+
+  useEffect(() => {
+    if (category !== "All categories" && !categoryOptions.includes(category)) {
+      setCategory("All categories");
+    }
+  }, [category, categoryOptions]);
+
   const filtered = useMemo(
-    () => filterProducts(enrichedProducts, query, category, market),
-    [query, category, market],
+    () => filterProducts(products, query, category, market),
+    [products, query, category, market],
   );
 
   const risingSorted = useMemo(() => {
@@ -62,20 +85,35 @@ export function Dashboard() {
   }, [filtered]);
 
   const topPool = useMemo(
-    () => filterProducts(enrichedProducts, query, category, market),
-    [query, category, market],
+    () => filterProducts(products, query, category, market),
+    [products, query, category, market],
   );
 
   return (
     <div className="space-y-8 sm:space-y-10">
+      {error ? (
+        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900">
+          <p className="font-medium">Could not load product feed</p>
+          <p className="mt-1 text-rose-800/90">{error}</p>
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            className="mt-3 rounded-lg bg-rose-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-rose-800"
+          >
+            Retry
+          </button>
+        </div>
+      ) : null}
+
       <header className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-lg font-medium tracking-tight text-slate-500 sm:text-[1.05rem]">
             Live Product Radar
           </h1>
           <p className="mt-1 max-w-xl text-xs leading-relaxed text-slate-400">
-            Context for the shortlist below — filters and detail grids are
-            secondary.
+            Amazon listings via ScraperAPI (HTML) plus optional Yamibuy rows from JSON —
+            Opportunity Score merges snapshot history. Use the calendar below for
+            30–60d planning; it is not live sales data.
           </p>
         </div>
         <p className="text-[11px] tabular-nums text-slate-400">
@@ -83,7 +121,17 @@ export function Dashboard() {
         </p>
       </header>
 
-      <TopOpportunitiesWeek products={topPool} />
+      <RetailPlanPanel />
+
+      <GptAnalyzePanel />
+
+      {loading && products.length === 0 ? (
+        <div className="flex min-h-[240px] items-center justify-center rounded-2xl border border-slate-200 bg-white text-sm text-slate-500">
+          Loading product feed…
+        </div>
+      ) : (
+        <TopOpportunitiesWeek products={topPool} />
+      )}
 
       <div className="space-y-8 border-t border-slate-200/70 pt-8 sm:space-y-9 sm:pt-10">
         <div className="space-y-5">
@@ -104,32 +152,33 @@ export function Dashboard() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search by title or category…"
-                  className="w-full rounded-lg border border-slate-200/90 bg-white/90 py-2.5 pl-10 pr-3 text-sm text-slate-700 shadow-none placeholder:text-slate-400 focus:border-slate-300/80 focus:outline-none focus:ring-1 focus:ring-slate-200"
+                  disabled={loading && products.length === 0}
+                  className="w-full rounded-lg border border-slate-200/90 bg-white/90 py-2.5 pl-10 pr-3 text-sm text-slate-700 shadow-none placeholder:text-slate-400 focus:border-slate-300/80 focus:outline-none focus:ring-1 focus:ring-slate-200 disabled:opacity-50"
                 />
               </div>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-            <FilterSelect
-              label="Category"
-              value={category}
-              onChange={(v) => setCategory(v as (typeof categories)[number])}
-              options={[...categories]}
-              quiet
-            />
-            <FilterSelect
-              label="Market"
-              value={market}
-              onChange={(v) => setMarket(v as (typeof markets)[number])}
-              options={[...markets]}
-              quiet
-            />
-            <FilterSelect
-              label="Time range"
-              value={timeRange}
-              onChange={(v) => setTimeRange(v as (typeof timeRanges)[number])}
-              options={[...timeRanges]}
-              quiet
-            />
+              <FilterSelect
+                label="Category"
+                value={category}
+                onChange={setCategory}
+                options={categoryOptions}
+                quiet
+              />
+              <FilterSelect
+                label="Market"
+                value={market}
+                onChange={(v) => setMarket(v as (typeof markets)[number])}
+                options={[...markets]}
+                quiet
+              />
+              <FilterSelect
+                label="Time range"
+                value={timeRange}
+                onChange={(v) => setTimeRange(v as (typeof timeRanges)[number])}
+                options={[...timeRanges]}
+                quiet
+              />
             </div>
           </div>
         </div>
@@ -187,16 +236,17 @@ export function Dashboard() {
               </h2>
               <p className="mt-1 text-[11px] text-slate-400 leading-relaxed">
                 Ranked by 7-day net rank improvement across snapshots.{" "}
-                {filtered.length === enrichedProducts.length
+                {filtered.length === products.length
                   ? "Showing all tracked ASINs."
-                  : `Showing ${filtered.length} of ${enrichedProducts.length} after filters.`}
+                  : `Showing ${filtered.length} of ${products.length} after filters.`}
               </p>
             </div>
           </div>
           {risingSorted.length === 0 ? (
             <div className="rounded-lg border border-dashed border-slate-200/90 bg-white/60 p-10 text-center text-xs text-slate-500">
-              No products match your search. Try clearing filters or broadening the
-              category.
+              {products.length === 0 && !loading
+                ? "No products returned. Check ScraperAPI key, Amazon URLs, or try FEED_MODE=snapshot."
+                : "No products match your search. Try clearing filters or broadening the category."}
             </div>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">

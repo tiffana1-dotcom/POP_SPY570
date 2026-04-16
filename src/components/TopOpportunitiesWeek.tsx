@@ -40,49 +40,56 @@ export function TopOpportunitiesWeek({ products }: TopOpportunitiesWeekProps) {
           </span>
         </div>
 
-        <ol className="mt-7 divide-y divide-slate-200/90 rounded-2xl border border-slate-200/90 bg-slate-50/40 shadow-inner backdrop-blur-[2px] sm:mt-8">
-          {top.map((p, i) => (
-            <li key={p.asin}>
-              <Link
-                to={`/products/${p.asin}`}
-                className="group flex flex-col gap-4 p-4 transition-colors hover:bg-white/90 sm:flex-row sm:items-center sm:gap-5 sm:p-5"
-              >
-                <div className="flex items-start gap-4 sm:contents">
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-base font-bold text-white shadow-md tabular-nums ring-2 ring-white sm:h-14 sm:w-14 sm:text-lg">
-                    #{i + 1}
-                  </span>
-                  <img
-                    src={p.image}
-                    alt=""
-                    className="h-16 w-16 shrink-0 rounded-2xl object-cover shadow-md ring-2 ring-white sm:h-[4.75rem] sm:w-[4.75rem]"
-                  />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-[15px] font-semibold leading-snug text-slate-900 group-hover:text-slate-800 sm:text-base">
-                      {p.title}
-                    </p>
-                    <p className="mt-1.5 text-sm leading-relaxed text-slate-600 line-clamp-2">
-                      {p.headlineReason}
-                    </p>
+        {top.length === 0 ? (
+          <p className="mt-7 rounded-2xl border border-dashed border-slate-200/90 bg-slate-50/50 px-4 py-10 text-center text-sm text-slate-500 sm:mt-8">
+            No products match this filter, or the feed is empty. Check API status
+            and filters.
+          </p>
+        ) : (
+          <ol className="mt-7 divide-y divide-slate-200/90 rounded-2xl border border-slate-200/90 bg-slate-50/40 shadow-inner backdrop-blur-[2px] sm:mt-8">
+            {top.map((p, i) => (
+              <li key={p.asin}>
+                <Link
+                  to={`/products/${p.asin}`}
+                  className="group flex flex-col gap-4 p-4 transition-colors hover:bg-white/90 sm:flex-row sm:items-center sm:gap-5 sm:p-5"
+                >
+                  <div className="flex items-start gap-4 sm:contents">
+                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-base font-bold text-white shadow-md tabular-nums ring-2 ring-white sm:h-14 sm:w-14 sm:text-lg">
+                      #{i + 1}
+                    </span>
+                    <img
+                      src={p.image}
+                      alt=""
+                      className="h-16 w-16 shrink-0 rounded-2xl object-cover shadow-md ring-2 ring-white sm:h-[4.75rem] sm:w-[4.75rem]"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[15px] font-semibold leading-snug text-slate-900 group-hover:text-slate-800 sm:text-base">
+                        {p.title}
+                      </p>
+                      <p className="mt-1.5 text-sm leading-relaxed text-slate-600 line-clamp-2">
+                        {p.headlineReason}
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex shrink-0 items-center justify-between gap-4 border-t border-slate-200/80 pt-4 sm:w-48 sm:flex-col sm:items-end sm:border-0 sm:pt-0">
-                  <div className="text-left sm:text-right">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400">
-                      Opportunity
-                    </p>
-                    <p className="text-3xl font-bold tabular-nums leading-none text-slate-900 sm:text-[2.125rem]">
-                      {p.opportunityScore}
-                    </p>
+                  <div className="flex shrink-0 items-center justify-between gap-4 border-t border-slate-200/80 pt-4 sm:w-48 sm:flex-col sm:items-end sm:border-0 sm:pt-0">
+                    <div className="text-left sm:text-right">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400">
+                        Opportunity
+                      </p>
+                      <p className="text-3xl font-bold tabular-nums leading-none text-slate-900 sm:text-[2.125rem]">
+                        {p.opportunityScore}
+                      </p>
+                    </div>
+                    <AlertBadge
+                      kind="recommendation"
+                      recommendation={p.recommendation}
+                    />
                   </div>
-                  <AlertBadge
-                    kind="recommendation"
-                    recommendation={p.recommendation}
-                  />
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ol>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        )}
       </div>
     </section>
   );

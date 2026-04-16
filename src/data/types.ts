@@ -1,4 +1,8 @@
-export type SourceType = "Best Sellers" | "Movers & Shakers" | "New Releases";
+export type SourceType =
+  | "Best Sellers"
+  | "Movers & Shakers"
+  | "New Releases"
+  | "Search";
 
 export type Recommendation = "Import" | "Watch" | "Avoid";
 
@@ -8,7 +12,11 @@ export type CategoryHeat = "Heating Up" | "Stable" | "Saturated";
 
 export type AlertSeverity = "Info" | "Elevated" | "Critical";
 
+/** Sales channel the row was sourced from (Amazon vs specialty Asian e‑commerce, etc.) */
+export type Retailer = "amazon" | "yamibuy";
+
 export interface Product {
+  /** Stable id in the app — Amazon ASIN or another retailer SKU string */
   asin: string;
   title: string;
   image: string;
@@ -16,6 +24,8 @@ export interface Product {
   latestPrice: string;
   latestRating: number;
   latestReviewCount: number;
+  /** Defaults to Amazon when omitted (live scrape / snapshot feed) */
+  retailer?: Retailer;
 }
 
 export interface ProductSnapshot {
