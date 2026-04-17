@@ -239,32 +239,3 @@ if __name__ == "__main__":
         print(f"ACTION  : {risk['recommended_action']}")
         if risk['block']:
             print(f"*** BLOCKED FROM PIPELINE ***")
-from tariff_filter import flag_trade_risk
-
-# --- Inside your results.append(...) block ---
-
-trade_risk = flag_trade_risk(
-    product_name=display_name,
-    country_of_origin=product.get('country_of_origin', 'China'),  
-    product_category=product.get('category')
-)
-
-# OVERRIDE: We want to penalize Tier 3 (China), not block it completely.
-if trade_risk['tier'] == 3:
-    trade_risk['block'] = False  
-
-# APPLY THE TIER PENALTIES TO THE ARBITRAGE SCORE
-if trade_risk['tier'] == 4:
-    score = 0  # 100% Penalty: Blocked completely (Sanctioned/Illegal)
-elif trade_risk['tier'] == 3:
-    score = round(score * 0.80)  # 20% Penalty for Section 301 Tariffs
-elif trade_risk['tier'] == 2:
-    score = round(score * 0.85)  # 15% Penalty for elevated inspection/logistics risk
-
-results.append({
-    # ... (your other existing fields) ...
-    'trade_tier':   trade_risk['tier'],
-    'trade_label':  trade_risk['tier_label'],
-    'trade_flags':  trade_risk['product_flags'],
-    'blocked':      trade_risk['block'],
-})
