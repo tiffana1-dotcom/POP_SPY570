@@ -148,11 +148,10 @@ def flag_trade_risk(product_name: str, country_of_origin: str,
         "block":          bool   ← True if tier >= 3 (should not source)
     }
     """
-    country_data = COUNTRY_RISK.get(country_of_origin, {
-        "tier": 1,
-        "reason": "Country not in database — manual review recommended"
-    })
-
+   country_data = COUNTRY_RISK.get(country_of_origin, {
+    "tier": 0,
+    "reason": "Country not in database — assumed US origin, standard due diligence applies"
+})
     tier = country_data["tier"]
     country_reason = country_data["reason"]
 
