@@ -156,6 +156,7 @@ def load_terms(path: Path) -> list[str]:
     cleaned: list[str] = []
     seen: set[str] = set()
 
+    terms = terms[0:50]
     for term in terms:
         t = clean_inline_text(str(term))
         if t and t not in seen:
