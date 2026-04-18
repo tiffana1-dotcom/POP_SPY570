@@ -1,0 +1,30 @@
+import requests
+import json
+
+queries = ["Lotus Mooncake", "Instant Matcha"]
+
+results = []
+
+for query in queries:
+    
+    # set up the request parameters
+    params = {
+        "api_key": "3689A4D8E0A645FAA85B9B57940CD485",
+        "type": "search",
+        "amazon_domain": "amazon.com",
+        "search_term": query
+    }
+
+    api_result = requests.get("https://api.rainforestapi.com/request", params=params)
+
+    data = api_result.json()
+
+    for item in data.get("search_results", [])[:10]:
+        results.append({
+            "query": query,
+            "product": item 
+        })
+
+# save data
+with open("data.json", "w") as f:
+    json.dump(results, f, indent=2)

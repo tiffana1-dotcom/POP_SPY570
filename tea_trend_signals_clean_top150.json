@@ -1,0 +1,2581 @@
+[
+  {
+    "term": "rose black tea",
+    "original_term": "hong rose black tea",
+    "term_type": "tea_phrase",
+    "concept_key": "rose black tea",
+    "title_match_count": 1,
+    "score": 13,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "longer phrase",
+      "style-based tea phrase",
+      "style + ingredient + tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "yunnan specialty flower tea dragon ball dian hong rose black tea"
+    ]
+  },
+  {
+    "term": "mue thai tea",
+    "original_term": "mue thai tea",
+    "term_type": "tea_phrase",
+    "concept_key": "mue thai tea",
+    "title_match_count": 1,
+    "score": 12,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "black tapioca pearl x cha tra mue thai tea mix powder"
+    ]
+  },
+  {
+    "term": "thai tea",
+    "original_term": "thai tea nanyang",
+    "term_type": "tea_phrase",
+    "concept_key": "thai tea",
+    "title_match_count": 1,
+    "score": 12,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "thai tea drink nanyang milk tea oz"
+    ]
+  },
+  {
+    "term": "japanese green tea",
+    "original_term": "unsweetened japanese green tea",
+    "term_type": "tea_phrase",
+    "concept_key": "japanese green tea",
+    "title_match_count": 1,
+    "score": 11,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "longer phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept",
+      "modifier attached to tea phrase"
+    ],
+    "example_titles": [
+      "uji matcha powder unsweetened japanese green tea sugar"
+    ]
+  },
+  {
+    "term": "kong milk tea",
+    "original_term": "kong milk tea",
+    "term_type": "format",
+    "concept_key": "kong milk tea",
+    "title_match_count": 1,
+    "score": 11,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "instant -in- hong kong style milk tea latte sachets -hot & iced ready just add water authentic asian tea drink"
+    ]
+  },
+  {
+    "term": "nanyang milk tea",
+    "original_term": "nanyang milk tea",
+    "term_type": "format",
+    "concept_key": "nanyang milk tea",
+    "title_match_count": 1,
+    "score": 11,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "thai tea drink nanyang milk tea oz"
+    ]
+  },
+  {
+    "term": "thai milk tea",
+    "original_term": "thai milk tea",
+    "term_type": "format",
+    "concept_key": "thai milk tea",
+    "title_match_count": 1,
+    "score": 11,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "instant thai milk tea mix 3in1"
+    ]
+  },
+  {
+    "term": "barley tea",
+    "original_term": "mugicha unsweetened",
+    "term_type": "tea_phrase",
+    "concept_key": "barley tea",
+    "title_match_count": 1,
+    "score": 11,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept",
+      "modifier attached to tea phrase"
+    ],
+    "example_titles": [
+      "mugicha unsweetened barley tea oz sugar fat low calories caffeine free"
+    ]
+  },
+  {
+    "term": "ceylon tea",
+    "original_term": "ceylon tea",
+    "term_type": "tea_phrase",
+    "concept_key": "ceylon tea",
+    "title_match_count": 1,
+    "score": 11,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "wan li mu lan ceylon tea bags 8p"
+    ]
+  },
+  {
+    "term": "japanese tea",
+    "original_term": "japanese tea",
+    "term_type": "tea_phrase",
+    "concept_key": "japanese tea",
+    "title_match_count": 1,
+    "score": 11,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "japanese matcha powder premium green tea japanese tea"
+    ]
+  },
+  {
+    "term": "kong tea",
+    "original_term": "kong tea drip",
+    "term_type": "tea_phrase",
+    "concept_key": "kong tea",
+    "title_match_count": 1,
+    "score": 11,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "maria s hong kong style tea - drip filter bag"
+    ]
+  },
+  {
+    "term": "hokkaido royal milk tea",
+    "original_term": "hokkaido royal milk tea",
+    "term_type": "format",
+    "concept_key": "hokkaido royal milk tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "longer phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "hokkaido royal milk tea instant matcha latte sticks"
+    ]
+  },
+  {
+    "term": "hong kong milk tea",
+    "original_term": "hong kong milk tea",
+    "term_type": "format",
+    "concept_key": "hong kong milk tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "longer phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "instant -in- hong kong style milk tea latte sachets -hot & iced ready just add water authentic asian tea drink"
+    ]
+  },
+  {
+    "term": "hong kong-style milk tea",
+    "original_term": "hong kong-style milk tea",
+    "term_type": "format",
+    "concept_key": "hong kong-style milk tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "longer phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "angel trans fat hong kong-style milk tea powder instant brew with premium black tea & milk makes quick & convenient"
+    ]
+  },
+  {
+    "term": "kaden royal milk tea",
+    "original_term": "kaden royal milk tea",
+    "term_type": "format",
+    "concept_key": "kaden royal milk tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "longer phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "kocha kaden royal milk tea oz milk"
+    ]
+  },
+  {
+    "term": "american ginseng tea",
+    "original_term": "american ginseng tea",
+    "term_type": "tea_phrase",
+    "concept_key": "american ginseng tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "american ginseng instant tea sachets- nourishing boosts energy premium herbal tea"
+    ]
+  },
+  {
+    "term": "apple green tea",
+    "original_term": "apple green tea",
+    "term_type": "tea_phrase",
+    "concept_key": "apple green tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "vita sparkling apple green tea drink oz"
+    ]
+  },
+  {
+    "term": "assam milk tea",
+    "original_term": "assam low milk tea",
+    "term_type": "format",
+    "concept_key": "assam milk tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "longer phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "assam low sugar milk tea jasmine green tea oz"
+    ]
+  },
+  {
+    "term": "beans barley tea",
+    "original_term": "beans barley tea",
+    "term_type": "tea_phrase",
+    "concept_key": "beans barley tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "red beans and barley tea healthy nourishing tea bags"
+    ]
+  },
+  {
+    "term": "berry ginger tea",
+    "original_term": "berry ginger tea",
+    "term_type": "tea_phrase",
+    "concept_key": "berry ginger tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "brown sugar longan red dates goji berry ginger tea 120gx10packets"
+    ]
+  },
+  {
+    "term": "brown rice tea",
+    "original_term": "genmaicha unsweetened",
+    "term_type": "tea_phrase",
+    "concept_key": "brown rice tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "longer phrase",
+      "rare but specific tea-context concept",
+      "modifier attached to tea phrase"
+    ],
+    "example_titles": [
+      "oi ocha matcha genmaicha unsweetened roasted brown rice green tea oz sugar calories fat"
+    ]
+  },
+  {
+    "term": "buckthorn lemon tea",
+    "original_term": "buckthorn lemon tea",
+    "term_type": "tea_phrase",
+    "concept_key": "buckthorn lemon tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "early c sea buckthorn lemon tea brighten skin & boost metabolism antioxidant herbal tea for whitening & lung care vitamin c enriched xiaohongshu favorite"
+    ]
+  },
+  {
+    "term": "cassia oolong tea",
+    "original_term": "cassia oolong tea",
+    "term_type": "tea_phrase",
+    "concept_key": "cassia oolong tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "sugar-free gold cassia oolong tea"
+    ]
+  },
+  {
+    "term": "cassia seed tea",
+    "original_term": "cassia seed tea",
+    "term_type": "tea_phrase",
+    "concept_key": "cassia seed tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "chrysanthemum cassia seed tea for eyes protection"
+    ]
+  },
+  {
+    "term": "cassia seeds tea",
+    "original_term": "cassia seeds tea",
+    "term_type": "tea_phrase",
+    "concept_key": "cassia seeds tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "wang roasted cassia seeds tea"
+    ]
+  },
+  {
+    "term": "coconut black tea",
+    "original_term": "coconut black tea",
+    "term_type": "tea_phrase",
+    "concept_key": "coconut black tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "nanguo coconut black tea powder"
+    ]
+  },
+  {
+    "term": "coconut jasmine tea",
+    "original_term": "coconut jasmine tea",
+    "term_type": "tea_phrase",
+    "concept_key": "coconut jasmine tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "green coconut jasmine tea oz sugar fat low calories"
+    ]
+  },
+  {
+    "term": "cong lemon tea",
+    "original_term": "cong lemon tea",
+    "term_type": "tea_phrase",
+    "concept_key": "cong lemon tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "ya shi xiang phoenix dan cong lemon tea oz sugar fat calories"
+    ]
+  },
+  {
+    "term": "fried rice tea",
+    "original_term": "fried rice tea",
+    "term_type": "tea_phrase",
+    "concept_key": "fried rice tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "aged ginger rice tea ginger rice tea fried rice tea"
+    ]
+  },
+  {
+    "term": "fruit lemon tea",
+    "original_term": "fruit lemon tea",
+    "term_type": "tea_phrase",
+    "concept_key": "fruit lemon tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "kumquat passion fruit lemon tea"
+    ]
+  },
+  {
+    "term": "gardenia milk tea",
+    "original_term": "gardenia milk tea+magnolia",
+    "term_type": "format",
+    "concept_key": "gardenia milk tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "kongshan gardenia instant milk tea+magnolia black milk tea+jasmine snow bud milk tea combo packs"
+    ]
+  },
+  {
+    "term": "ginger jujube tea",
+    "original_term": "ginger jujube tea",
+    "term_type": "tea_phrase",
+    "concept_key": "ginger jujube tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "brown sugar ginger jujube tea sachets"
+    ]
+  },
+  {
+    "term": "ginger rice tea",
+    "original_term": "ginger rice tea",
+    "term_type": "tea_phrase",
+    "concept_key": "ginger rice tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "aged ginger rice tea ginger rice tea fried rice tea"
+    ]
+  },
+  {
+    "term": "ginseng ginger tea",
+    "original_term": "ginseng ginger tea",
+    "term_type": "tea_phrase",
+    "concept_key": "ginseng ginger tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "korean ginseng ginger tea with honey - sweet herbal tea"
+    ]
+  },
+  {
+    "term": "grape black tea",
+    "original_term": "grape black tea",
+    "term_type": "tea_phrase",
+    "concept_key": "grape black tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "grape black tea fruit tea with real fruit juice oz"
+    ]
+  },
+  {
+    "term": "grape green tea",
+    "original_term": "grape green tea",
+    "term_type": "tea_phrase",
+    "concept_key": "grape green tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "grape flavored green tea drink oz low calories low sugar fat"
+    ]
+  },
+  {
+    "term": "grape jasmine tea",
+    "original_term": "grape jasmine tea",
+    "term_type": "tea_phrase",
+    "concept_key": "grape jasmine tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "green grape juice jasmine tea oz fat sugar substitute"
+    ]
+  },
+  {
+    "term": "grapefruit oolong tea",
+    "original_term": "grapefruit oolong tea",
+    "term_type": "tea_phrase",
+    "concept_key": "grapefruit oolong tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "grapefruit oolong tea fruit tea with real fruit juice oz"
+    ]
+  },
+  {
+    "term": "green kumquat tea",
+    "original_term": "green kumquat tea",
+    "term_type": "tea_phrase",
+    "concept_key": "green kumquat tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "passion fruit green kumquat tea sachets"
+    ]
+  },
+  {
+    "term": "handcrafted lemon tea",
+    "original_term": "handcrafted lemon tea",
+    "term_type": "tea_phrase",
+    "concept_key": "handcrafted lemon tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "yashi xiang duck shit aroma tea phoenix dan cong tea handcrafted lemon tea strong aroma tea leaves"
+    ]
+  },
+  {
+    "term": "hawthorn chrysanthemum tea",
+    "original_term": "hawthorn chrysanthemum tea",
+    "term_type": "tea_phrase",
+    "concept_key": "hawthorn chrysanthemum tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "orange peel hawthorn chrysanthemum tea"
+    ]
+  },
+  {
+    "term": "honey citron tea",
+    "original_term": "honey citron tea",
+    "term_type": "tea_phrase",
+    "concept_key": "honey citron tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "korean honey citron tea concentrated jam korea trendy diy drinks desserts baking"
+    ]
+  },
+  {
+    "term": "honey green tea",
+    "original_term": "honey green tea",
+    "term_type": "tea_phrase",
+    "concept_key": "honey green tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "honey green tea naturally sweetened everyday refreshment food-friendly"
+    ]
+  },
+  {
+    "term": "honey hallabong tea",
+    "original_term": "honey hallabong tea",
+    "term_type": "tea_phrase",
+    "concept_key": "honey hallabong tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "honey hallabong tea concentrated jam korea trendy diy drinks dessert baking"
+    ]
+  },
+  {
+    "term": "honey herbal tea",
+    "original_term": "honey herbal tea",
+    "term_type": "tea_phrase",
+    "concept_key": "honey herbal tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "korean ginseng ginger tea with honey - sweet herbal tea"
+    ]
+  },
+  {
+    "term": "hong kong tea",
+    "original_term": "hong kong tea drip",
+    "term_type": "tea_phrase",
+    "concept_key": "hong kong tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "longer phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "maria s hong kong style tea - drip filter bag"
+    ]
+  },
+  {
+    "term": "iced lemon tea",
+    "original_term": "iced lemon tea",
+    "term_type": "tea_phrase",
+    "concept_key": "iced lemon tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "iced lemon tea with nata de coco oz"
+    ]
+  },
+  {
+    "term": "iced mint tea",
+    "original_term": "iced mint tea",
+    "term_type": "tea_phrase",
+    "concept_key": "iced mint tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "cool cold ice black tea iced mint tea oz"
+    ]
+  },
+  {
+    "term": "iced peach tea",
+    "original_term": "iced peach tea",
+    "term_type": "tea_phrase",
+    "concept_key": "iced peach tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "iced peach tea drink with nata de coco"
+    ]
+  },
+  {
+    "term": "kocha peach tea",
+    "original_term": "kocha peach tea",
+    "term_type": "tea_phrase",
+    "concept_key": "kocha peach tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "gogo no kocha peach tea caffeine free oz"
+    ]
+  },
+  {
+    "term": "korean ginseng tea",
+    "original_term": "korean ginseng tea",
+    "term_type": "tea_phrase",
+    "concept_key": "korean ginseng tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "korean ginseng instant tea sachets energy boost immune support fatigue relief healthy herbal tea"
+    ]
+  },
+  {
+    "term": "kumquat orange tea",
+    "original_term": "kumquat orange tea",
+    "term_type": "tea_phrase",
+    "concept_key": "kumquat orange tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "freeze-dried lime slices brown sugar passion fruit and green kumquat orange tea"
+    ]
+  },
+  {
+    "term": "lemon black tea",
+    "original_term": "lemon black tea",
+    "term_type": "tea_phrase",
+    "concept_key": "lemon black tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "d-toc kombucha lemon black tea - packets"
+    ]
+  },
+  {
+    "term": "lemon concentrated tea",
+    "original_term": "lemon concentrated tea",
+    "term_type": "tea_phrase",
+    "concept_key": "lemon concentrated tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "passion fruit lemon concentrated juice tea rich in vitamin c"
+    ]
+  },
+  {
+    "term": "lemon ice tea",
+    "original_term": "lemon ice tea",
+    "term_type": "tea_phrase",
+    "concept_key": "lemon ice tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "lemon ice tea carbonated tea drinks oz"
+    ]
+  },
+  {
+    "term": "lemon kumquat tea",
+    "original_term": "lemon kumquat tea",
+    "term_type": "tea_phrase",
+    "concept_key": "lemon kumquat tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "preserved plum lemon kumquat tea drinking"
+    ]
+  },
+  {
+    "term": "lemon sparkling tea",
+    "original_term": "lemon sparkling tea",
+    "term_type": "tea_phrase",
+    "concept_key": "lemon sparkling tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "new vita zero sugar lemon sparkling tea oz sugar"
+    ]
+  },
+  {
+    "term": "lychee black tea",
+    "original_term": "lychee black tea",
+    "term_type": "tea_phrase",
+    "concept_key": "lychee black tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "nayuki s tea lychee black tea fruit juice tea drink low sugar & low calorie oz"
+    ]
+  },
+  {
+    "term": "lychee milk tea",
+    "original_term": "lychee milk tea",
+    "term_type": "format",
+    "concept_key": "lychee milk tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "lychee flavor instant milk tea sugar low fat low calories yami exclusive"
+    ]
+  },
+  {
+    "term": "lychee red tea",
+    "original_term": "lychee red tea",
+    "term_type": "tea_phrase",
+    "concept_key": "lychee red tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "lychee red tea fruit tea cold brew tea tea bags nutritious flower tea yami exclusive"
+    ]
+  },
+  {
+    "term": "matcha green tea",
+    "original_term": "japanese matcha green tea",
+    "term_type": "tea_phrase",
+    "concept_key": "matcha green tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "longer phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "oi ocha japanese premium matcha green tea bags 20p itzy yeji s pick"
+    ]
+  },
+  {
+    "term": "matcha milky tea",
+    "original_term": "uji matcha milky tea",
+    "term_type": "tea_phrase",
+    "concept_key": "matcha milky tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "longer phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "uji matcha milky tea - powdered japanese drink mix"
+    ]
+  },
+  {
+    "term": "matcha strong tea",
+    "original_term": "uji matcha strong tea",
+    "term_type": "tea_phrase",
+    "concept_key": "matcha strong tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "longer phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "yiyou yamen uji matcha strong tea hot and cold matcha latte powder"
+    ]
+  },
+  {
+    "term": "mulberry rose tea",
+    "original_term": "mulberry rose tea",
+    "term_type": "tea_phrase",
+    "concept_key": "mulberry rose tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "black fruit goji berry mulberry rose tea nutritional tea for wellness"
+    ]
+  },
+  {
+    "term": "osmanthus longjing tea",
+    "original_term": "osmanthus longjing tea",
+    "term_type": "tea_phrase",
+    "concept_key": "osmanthus longjing tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "osmanthus longjing tea drink oz sugar calories fat honor of kings collaboration"
+    ]
+  },
+  {
+    "term": "peach black tea",
+    "original_term": "peach black tea",
+    "term_type": "tea_phrase",
+    "concept_key": "peach black tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "white peach x golden peach black tea"
+    ]
+  },
+  {
+    "term": "peach fruit tea",
+    "original_term": "peach fruit tea",
+    "term_type": "tea_phrase",
+    "concept_key": "peach fruit tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "cafe latory peach fruit tea - packets"
+    ]
+  },
+  {
+    "term": "peach iced tea",
+    "original_term": "peach iced tea",
+    "term_type": "tea_phrase",
+    "concept_key": "peach iced tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "flat peach iced tea ice pouch drink oz gs25 selected"
+    ]
+  },
+  {
+    "term": "pear rock tea",
+    "original_term": "pear rock tea",
+    "term_type": "tea_phrase",
+    "concept_key": "pear rock tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "pear & rock sugar tea relieves ulcers and soothes cough"
+    ]
+  },
+  {
+    "term": "pear white tea",
+    "original_term": "pear white tea",
+    "term_type": "tea_phrase",
+    "concept_key": "pear white tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "pear white tea flower tea moistening tea moistening and soothing"
+    ]
+  },
+  {
+    "term": "royal milk tea",
+    "original_term": "royal milk tea milk",
+    "term_type": "format",
+    "concept_key": "royal milk tea",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "longer phrase",
+      "style-based tea phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "kocha kaden royal milk tea oz milk"
+    ]
+  },
+  {
+    "term": "aloe vera",
+    "original_term": "aloe vera juice+chrysanthemum",
+    "term_type": "ingredient_phrase",
+    "concept_key": "aloe vera",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "lychee aloe vera juice+chrysanthemum tea+white grape aloe juice oz combo packs"
+    ]
+  },
+  {
+    "term": "base honey",
+    "original_term": "base honey latte",
+    "term_type": "format",
+    "concept_key": "base honey",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "tully s espresso base honey latte coffee oz dilute with water milk"
+    ]
+  },
+  {
+    "term": "bean mint",
+    "original_term": "bean mint jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "bean mint",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "su-style mung bean drink mint jasmine mung bean soup low fat low sugar seasonal limited"
+    ]
+  },
+  {
+    "term": "chrysanthemum cassia",
+    "original_term": "chrysanthemum cassia",
+    "term_type": "ingredient_phrase",
+    "concept_key": "chrysanthemum cassia",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "chrysanthemum cassia seed tea for eyes protection"
+    ]
+  },
+  {
+    "term": "chrysanthemum grapefruit",
+    "original_term": "chrysanthemum grapefruit",
+    "term_type": "ingredient_phrase",
+    "concept_key": "chrysanthemum grapefruit",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "chrysanthemum and grapefruit water low calories low sugar fat oz"
+    ]
+  },
+  {
+    "term": "coconut jasmine",
+    "original_term": "coconut jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "coconut jasmine",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "green coconut jasmine tea oz sugar fat low calories"
+    ]
+  },
+  {
+    "term": "coconut milk",
+    "original_term": "coconut milk latte",
+    "term_type": "format",
+    "concept_key": "coconut milk",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "coconut milk latte coffee sachets yami exclusive"
+    ]
+  },
+  {
+    "term": "coffee jasmine",
+    "original_term": "coffee jasmine osmanthus",
+    "term_type": "ingredient_phrase",
+    "concept_key": "coffee jasmine",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "cold brew instant freeze-dried black coffee jasmine osmanthus rose variety pack medium roast pods experience natural floral aroma"
+    ]
+  },
+  {
+    "term": "goji berry",
+    "original_term": "goji berry chrysanthemum",
+    "term_type": "ingredient_phrase",
+    "concept_key": "goji berry",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "wolfberry water goji berry chrysanthemum herbal beverage oz sugar fat calories"
+    ]
+  },
+  {
+    "term": "grape jasmine",
+    "original_term": "grape jasmine green",
+    "term_type": "ingredient_phrase",
+    "concept_key": "grape jasmine",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "white grape jasmine green tea bag no additives"
+    ]
+  },
+  {
+    "term": "green coconut",
+    "original_term": "green coconut jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "green coconut",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "green coconut jasmine tea oz sugar fat low calories"
+    ]
+  },
+  {
+    "term": "green grape",
+    "original_term": "green grape jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "green grape",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "green grape juice jasmine tea oz fat sugar substitute"
+    ]
+  },
+  {
+    "term": "hawthorn chrysanthemum",
+    "original_term": "hawthorn chrysanthemum",
+    "term_type": "ingredient_phrase",
+    "concept_key": "hawthorn chrysanthemum",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "orange peel hawthorn chrysanthemum tea"
+    ]
+  },
+  {
+    "term": "honey latte",
+    "original_term": "honey latte",
+    "term_type": "format",
+    "concept_key": "honey latte",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "tully s espresso base honey latte coffee oz dilute with water milk"
+    ]
+  },
+  {
+    "term": "jasmine barley",
+    "original_term": "jasmine barley",
+    "term_type": "ingredient_phrase",
+    "concept_key": "jasmine barley",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "jasmine barley tea sugar fat low calories oz"
+    ]
+  },
+  {
+    "term": "jasmine brown",
+    "original_term": "jasmine brown rose",
+    "term_type": "ingredient_phrase",
+    "concept_key": "jasmine brown",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "week roasted milk tea jasmine & brown sugar & rose flavors"
+    ]
+  },
+  {
+    "term": "jasmine osmanthus",
+    "original_term": "jasmine osmanthus taro",
+    "term_type": "ingredient_phrase",
+    "concept_key": "jasmine osmanthus",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "floral flavored milk tea eight cans matcha jasmine osmanthus taro sugar yami exclusive"
+    ]
+  },
+  {
+    "term": "latte -pack",
+    "original_term": "latte -pack melon",
+    "term_type": "format",
+    "concept_key": "latte -pack",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "newmix instant coffee latte -pack melon ice cream flavor korea trendy coffee shop"
+    ]
+  },
+  {
+    "term": "mint jasmine",
+    "original_term": "mint jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "mint jasmine",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "su-style mung bean drink mint jasmine mung bean soup low fat low sugar seasonal limited"
+    ]
+  },
+  {
+    "term": "osmanthus longjing",
+    "original_term": "osmanthus longjing",
+    "term_type": "ingredient_phrase",
+    "concept_key": "osmanthus longjing",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "osmanthus longjing tea drink oz sugar calories fat honor of kings collaboration"
+    ]
+  },
+  {
+    "term": "peach jasmine",
+    "original_term": "peach jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "peach jasmine",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "white peach jasmine iced tea low sugar oz"
+    ]
+  },
+  {
+    "term": "peel hawthorn",
+    "original_term": "peel hawthorn chrysanthemum",
+    "term_type": "ingredient_phrase",
+    "concept_key": "peel hawthorn",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "orange peel hawthorn chrysanthemum tea"
+    ]
+  },
+  {
+    "term": "rice wine",
+    "original_term": "rice wine jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "rice wine",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "sparkling rice wine beverage jasmine tea flavor vol"
+    ]
+  },
+  {
+    "term": "vera juice+chrysanthemum",
+    "original_term": "vera juice+chrysanthemum",
+    "term_type": "ingredient_phrase",
+    "concept_key": "vera juice+chrysanthemum",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "lychee aloe vera juice+chrysanthemum tea+white grape aloe juice oz combo packs"
+    ]
+  },
+  {
+    "term": "white grape",
+    "original_term": "white grape jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "white grape",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "white grape jasmine green tea bag no additives"
+    ]
+  },
+  {
+    "term": "white peach",
+    "original_term": "white peach jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "white peach",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "white peach jasmine iced tea low sugar oz"
+    ]
+  },
+  {
+    "term": "latte",
+    "original_term": "latte caffeine free",
+    "term_type": "format",
+    "concept_key": "latte",
+    "title_match_count": 1,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept",
+      "modifier attached to tea phrase"
+    ],
+    "example_titles": [
+      "unsweetened black sesame latte caffeine free"
+    ]
+  },
+  {
+    "term": "milk tea",
+    "original_term": "milk tea",
+    "term_type": "format",
+    "concept_key": "milk tea",
+    "title_match_count": 88,
+    "score": 10,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "strong repetition in tea titles (88)"
+    ],
+    "example_titles": [
+      "afternoon tea milk tea oz",
+      "angel trans fat hong kong-style milk tea powder instant brew with premium black tea & milk makes quick & convenient",
+      "assam low sugar milk tea jasmine green tea oz",
+      "assam milk tea qingti jasmine flavor",
+      "assam milk tea strawberry flavor oz"
+    ]
+  },
+  {
+    "term": "jujube roasted milk tea",
+    "original_term": "jujube roasted milk tea",
+    "term_type": "format",
+    "concept_key": "jujube roasted milk tea",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "longer phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "brown sugar ginger jujube roasted milk tea"
+    ]
+  },
+  {
+    "term": "kongshan gardenia milk tea",
+    "original_term": "kongshan gardenia milk tea+magnolia",
+    "term_type": "format",
+    "concept_key": "kongshan gardenia milk tea",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "known ingredient-like concept",
+      "longer phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "kongshan gardenia instant milk tea+magnolia black milk tea+jasmine snow bud milk tea combo packs"
+    ]
+  },
+  {
+    "term": "aroma milk tea",
+    "original_term": "aroma milk tea",
+    "term_type": "format",
+    "concept_key": "aroma milk tea",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "phoenix mountain oolong tea guangdong single-colony tea dancong tea duck shit aroma flavor milk tea base helps cut grease refresh digestion herbal tea grease-cutting oolong tea fruit tea"
+    ]
+  },
+  {
+    "term": "ancient tree",
+    "original_term": "ancient tree pu-erh",
+    "term_type": "ingredient_phrase",
+    "concept_key": "ancient tree",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "yunnan ancient tree pu-erh tea collection mountain sampler set raw & ripe gushu puer premium gift box for tea lovers x sachets"
+    ]
+  },
+  {
+    "term": "appreciation jasmine",
+    "original_term": "appreciation jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "appreciation jasmine",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "new chinese tea gift set delightful appreciation jasmine green tea"
+    ]
+  },
+  {
+    "term": "berry chrysanthemum",
+    "original_term": "berry chrysanthemum",
+    "term_type": "ingredient_phrase",
+    "concept_key": "berry chrysanthemum",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "wolfberry water goji berry chrysanthemum herbal beverage oz sugar fat calories"
+    ]
+  },
+  {
+    "term": "black coffee",
+    "original_term": "black coffee jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "black coffee",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "cold brew instant freeze-dried black coffee jasmine osmanthus rose variety pack medium roast pods experience natural floral aroma"
+    ]
+  },
+  {
+    "term": "boya jasmine",
+    "original_term": "boya jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "boya jasmine",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "boya jasmine green tea bags 8p yami exclusive"
+    ]
+  },
+  {
+    "term": "brew longjing",
+    "original_term": "brew longjing",
+    "term_type": "ingredient_phrase",
+    "concept_key": "brew longjing",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "cold brew longjing green tea oz sugar fat calories"
+    ]
+  },
+  {
+    "term": "butterfly elegance",
+    "original_term": "butterfly elegance jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "butterfly elegance",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "new chinese tea gift set song butterfly elegance jasmine green tea"
+    ]
+  },
+  {
+    "term": "canned large",
+    "original_term": "canned large chrysanthemum",
+    "term_type": "ingredient_phrase",
+    "concept_key": "canned large",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "golden chrysanthemum canned large chrysanthemum tea"
+    ]
+  },
+  {
+    "term": "cha yunnan",
+    "original_term": "cha yunnan pu-erh",
+    "term_type": "ingredient_phrase",
+    "concept_key": "cha yunnan",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "renxinchang rose ripe cooked fermented puer tuo cha - yunnan pu-erh tea - rose taste-"
+    ]
+  },
+  {
+    "term": "chrysanthemum bud",
+    "original_term": "chrysanthemum bud",
+    "term_type": "ingredient_phrase",
+    "concept_key": "chrysanthemum bud",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "premium first-picking chrysanthemum bud tea"
+    ]
+  },
+  {
+    "term": "chrysanthemum canned",
+    "original_term": "chrysanthemum canned",
+    "term_type": "ingredient_phrase",
+    "concept_key": "chrysanthemum canned",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "golden chrysanthemum canned large chrysanthemum tea"
+    ]
+  },
+  {
+    "term": "chrysanthemum clear",
+    "original_term": "chrysanthemum clear",
+    "term_type": "ingredient_phrase",
+    "concept_key": "chrysanthemum clear",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "chrysanthemum drink clear & gentle chrysanthemum tea low-sugar recipe oz"
+    ]
+  },
+  {
+    "term": "chrysanthemum eight",
+    "original_term": "chrysanthemum eight",
+    "term_type": "ingredient_phrase",
+    "concept_key": "chrysanthemum eight",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "stout sea chrysanthemum eight treasure tea"
+    ]
+  },
+  {
+    "term": "chrysanthemum liver-calming",
+    "original_term": "chrysanthemum liver-calming",
+    "term_type": "ingredient_phrase",
+    "concept_key": "chrysanthemum liver-calming",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "golden silk chrysanthemum liver-calming health tea - each cup contains of full-flowered tea"
+    ]
+  },
+  {
+    "term": "chrysanthemum mellow",
+    "original_term": "chrysanthemum mellow",
+    "term_type": "ingredient_phrase",
+    "concept_key": "chrysanthemum mellow",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "huai chrysanthemum mellow drink botanical beverage oz sugar calories fat"
+    ]
+  },
+  {
+    "term": "chrysanthemum monk",
+    "original_term": "chrysanthemum monk",
+    "term_type": "ingredient_phrase",
+    "concept_key": "chrysanthemum monk",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "chrysanthemum monk fruit tea bag 120gx10packets"
+    ]
+  },
+  {
+    "term": "chrysanthemum semen",
+    "original_term": "chrysanthemum semen",
+    "term_type": "ingredient_phrase",
+    "concept_key": "chrysanthemum semen",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "chrysanthemum & semen cassiae tea"
+    ]
+  },
+  {
+    "term": "chrysanthemum white",
+    "original_term": "chrysanthemum white",
+    "term_type": "ingredient_phrase",
+    "concept_key": "chrysanthemum white",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "chrysanthemum white tea herbal"
+    ]
+  },
+  {
+    "term": "clear gentle",
+    "original_term": "clear gentle chrysanthemum",
+    "term_type": "ingredient_phrase",
+    "concept_key": "clear gentle",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "chrysanthemum drink clear & gentle chrysanthemum tea low-sugar recipe oz"
+    ]
+  },
+  {
+    "term": "cold brew",
+    "original_term": "cold brew longjing",
+    "term_type": "ingredient_phrase",
+    "concept_key": "cold brew",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "cold brew longjing green tea oz sugar fat calories"
+    ]
+  },
+  {
+    "term": "delightful appreciation",
+    "original_term": "delightful appreciation jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "delightful appreciation",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "new chinese tea gift set delightful appreciation jasmine green tea"
+    ]
+  },
+  {
+    "term": "dragon hair",
+    "original_term": "dragon hair jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "dragon hair",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "dragon hair jasmine green tea leaf"
+    ]
+  },
+  {
+    "term": "dried jasmine",
+    "original_term": "dried jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "dried jasmine",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "organic dried jasmine usda"
+    ]
+  },
+  {
+    "term": "elegance jasmine",
+    "original_term": "elegance jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "elegance jasmine",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "new chinese tea gift set song butterfly elegance jasmine green tea"
+    ]
+  },
+  {
+    "term": "exquisite souvenirs",
+    "original_term": "exquisite souvenirs jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "exquisite souvenirs",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "zhaotea chinese-style tea gift box exquisite souvenirs jasmine green tea"
+    ]
+  },
+  {
+    "term": "first-picking chrysanthemum",
+    "original_term": "first-picking chrysanthemum",
+    "term_type": "ingredient_phrase",
+    "concept_key": "first-picking chrysanthemum",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "premium first-picking chrysanthemum bud tea"
+    ]
+  },
+  {
+    "term": "flower jasmine",
+    "original_term": "flower jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "flower jasmine",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "three flower jasmine tea"
+    ]
+  },
+  {
+    "term": "flowever jasmine",
+    "original_term": "flowever jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "flowever jasmine",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "flowever jasmine snow hair tea xuehao loose leaf tea bags"
+    ]
+  },
+  {
+    "term": "gentle chrysanthemum",
+    "original_term": "gentle chrysanthemum",
+    "term_type": "ingredient_phrase",
+    "concept_key": "gentle chrysanthemum",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "chrysanthemum drink clear & gentle chrysanthemum tea low-sugar recipe oz"
+    ]
+  },
+  {
+    "term": "golden chrysanthemum",
+    "original_term": "golden chrysanthemum canned",
+    "term_type": "ingredient_phrase",
+    "concept_key": "golden chrysanthemum",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "golden chrysanthemum canned large chrysanthemum tea"
+    ]
+  },
+  {
+    "term": "golden silk",
+    "original_term": "golden silk chrysanthemum",
+    "term_type": "ingredient_phrase",
+    "concept_key": "golden silk",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "golden silk chrysanthemum liver-calming health tea - each cup contains of full-flowered tea"
+    ]
+  },
+  {
+    "term": "golden-yellow fetal",
+    "original_term": "golden-yellow fetal chrysanthemum",
+    "term_type": "ingredient_phrase",
+    "concept_key": "golden-yellow fetal",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "jin si huang ju premium golden-yellow fetal chrysanthemum tea -"
+    ]
+  },
+  {
+    "term": "grade jasmine",
+    "original_term": "grade jasmine big",
+    "term_type": "ingredient_phrase",
+    "concept_key": "grade jasmine",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "zheng shan selected top grade jasmine big pekoe tea high-end gift for all occasions gift box"
+    ]
+  },
+  {
+    "term": "hair jasmine",
+    "original_term": "hair jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "hair jasmine",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "dragon hair jasmine green tea leaf"
+    ]
+  },
+  {
+    "term": "huai chrysanthemum",
+    "original_term": "huai chrysanthemum",
+    "term_type": "ingredient_phrase",
+    "concept_key": "huai chrysanthemum",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "huai chrysanthemum mellow drink botanical beverage oz sugar calories fat"
+    ]
+  },
+  {
+    "term": "jasmine aroma",
+    "original_term": "jasmine aroma",
+    "term_type": "ingredient_phrase",
+    "concept_key": "jasmine aroma",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "extra grade jasmine tea snow 50gx1 bag green tea jasmine aroma"
+    ]
+  },
+  {
+    "term": "jasmine big",
+    "original_term": "jasmine big",
+    "term_type": "ingredient_phrase",
+    "concept_key": "jasmine big",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "zheng shan selected top grade jasmine big pekoe tea high-end gift for all occasions gift box"
+    ]
+  },
+  {
+    "term": "jasmine blossom",
+    "original_term": "jasmine blossom",
+    "term_type": "ingredient_phrase",
+    "concept_key": "jasmine blossom",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "premium jasmine blossom green tea"
+    ]
+  },
+  {
+    "term": "jasmine butterfly",
+    "original_term": "jasmine butterfly",
+    "term_type": "ingredient_phrase",
+    "concept_key": "jasmine butterfly",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "tea jasmine butterfly brand extra grade jasmine tea classic purple pot loose tea"
+    ]
+  },
+  {
+    "term": "jasmine flower",
+    "original_term": "jasmine flower liver",
+    "term_type": "ingredient_phrase",
+    "concept_key": "jasmine flower",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "lapsangstore jasmine flower liver clearing and eyesight tea"
+    ]
+  },
+  {
+    "term": "jasmine fruit",
+    "original_term": "jasmine fruit",
+    "term_type": "ingredient_phrase",
+    "concept_key": "jasmine fruit",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "grape jasmine fruit tea"
+    ]
+  },
+  {
+    "term": "jasmine iced",
+    "original_term": "jasmine iced",
+    "term_type": "ingredient_phrase",
+    "concept_key": "jasmine iced",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "white peach jasmine iced tea low sugar oz"
+    ]
+  },
+  {
+    "term": "jasmine jasmine",
+    "original_term": "jasmine jasmine",
+    "term_type": "ingredient_phrase",
+    "concept_key": "jasmine jasmine",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "super jasmine jasmine green tea drink oz"
+    ]
+  },
+  {
+    "term": "jasmine loose",
+    "original_term": "jasmine loose",
+    "term_type": "ingredient_phrase",
+    "concept_key": "jasmine loose",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "jasmine loose tea cold brewed tea special no jasmine rhyme a memorable"
+    ]
+  },
+  {
+    "term": "jasmine milk",
+    "original_term": "jasmine milk ball",
+    "term_type": "ingredient_phrase",
+    "concept_key": "jasmine milk",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "specific 3-word phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "jasmine milk ball condensed milk coffee creamer oz white sugar"
+    ]
+  },
+  {
+    "term": "jasmine mung",
+    "original_term": "jasmine mung",
+    "term_type": "ingredient_phrase",
+    "concept_key": "jasmine mung",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "su-style mung bean drink mint jasmine mung bean soup low fat low sugar seasonal limited"
+    ]
+  },
+  {
+    "term": "jasmine passion",
+    "original_term": "jasmine passion",
+    "term_type": "ingredient_phrase",
+    "concept_key": "jasmine passion",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "fresh fruit tea jasmine passion orange sugar fat low calories"
+    ]
+  },
+  {
+    "term": "jasmine pearls",
+    "original_term": "jasmine pearls",
+    "term_type": "ingredient_phrase",
+    "concept_key": "jasmine pearls",
+    "title_match_count": 1,
+    "score": 9,
+    "reasons": [
+      "contains tea anchor",
+      "unknown but noun-like ingredient phrase",
+      "compact specific phrase",
+      "rare but specific tea-context concept"
+    ],
+    "example_titles": [
+      "jasmine pearls green tea bag"
+    ]
+  }
+]
