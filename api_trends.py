@@ -2,6 +2,7 @@ import time
 import requests
 import pandas as pd
 from pytrends.request import TrendReq
+from tariff_filter import flag_trade_risk
 
 RAINFOREST_KEY = "your_rainforest_api_key"
 WALMART_KEY    = "your_walmart_consumer_id"
@@ -164,8 +165,29 @@ def run_pipeline():
                       'rating': 0, 'review_count': 0, 'price': 0,
                       'in_stock': False, 'amazon_composite': 70}
 
+     # --- 1. Base Score ---
         score = arbitrage_score(trend, reddit['signal'], walmart['gap'], amazon['amazon_composite'])
 
+        # --- 2. Check the trade risk ---
+        trade_risk = flag_trade_risk(
+            product_name=display_name,
+            country_of_origin='China', # Default for the demo
+            product_category=None      
+        )
+
+        # --- 3. Apply the China Override ---
+        if trade_risk['tier'] == 3:
+            trade_risk['block'] = False  
+
+        # --- 4. Apply the Business Penalties ---
+        if trade_risk['tier'] == 4:
+            score = 0  
+        elif trade_risk['tier'] == 3:
+            score = round(score * 0.80)  # 20% Tariff Penalty
+        elif trade_risk['tier'] == 2:
+            score = round(score * 0.85)  # 15% Inspection Penalty
+
+        # --- 5. Save everything (INCLUDING THE RISK LABELS!) ---
         results.append({
             'product':          display_name,
             'arbitrage_score':  score,
@@ -179,6 +201,9 @@ def run_pipeline():
             'amazon_reviews':   amazon['review_count'],
             'price_usd':        amazon['price'],
             'asin':             amazon['asin'],
+            'trade_tier':       trade_risk['tier'],          # <-- THIS SAVES THE DATA
+            'trade_label':      trade_risk['tier_label'],    # <-- THIS SAVES THE DATA
+            'trade_flags':      trade_risk['product_flags']  # <-- THIS SAVES THE DATA
         })
         time.sleep(1)
 
