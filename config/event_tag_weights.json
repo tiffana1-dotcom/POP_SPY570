@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "notes": "Tunable weights for tag/event overlap scoring (0–1 scale per component contribution). Adjust for category strategy.",
+  "weights": {
+    "current_opportunity": 0.34,
+    "event_tag_overlap": 0.22,
+    "seasonal_category_fit": 0.18,
+    "validation_rating_reviews": 0.16,
+    "rank_bonus": 0.10
+  },
+  "tag_match_cap": 1.0,
+  "max_events_considered": 6
+}

@@ -1,15 +1,18 @@
 """
 TrendScout Live — Streamlit buyer dashboard.
-Loads product rows from temp_amazon.json (same folder as this file).
+Loads product rows from 51-100.json (same folder as this file).
 Run: streamlit run TrendScout.py
 """
 
 from __future__ import annotations
 
+import hashlib
 import html
 import json
+import os
 import re
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -19,7 +22,112 @@ import env_setup
 
 env_setup.load_pop_dotenv()
 
+from buyer_copilot import analyze_product, format_product_context_for_analysis
+from copilot_page import render_copilot_gpt_result
+from forecast_engine import attach_forecast_to_dataframe, top_forecast_products
 from trendscout_sidebar import SORT_LABELS, render_explore_sidebar
+
+# Global master–detail selection (Forecast, Priority queue, All results share this).
+SELECTED_PRODUCT_KEY = "selected_product"
+DETAIL_OPEN_KEY = "detail_open"
+
+
+def _close_detail_panel() -> None:
+    st.session_state[DETAIL_OPEN_KEY] = False
+    st.session_state[SELECTED_PRODUCT_KEY] = None
+
+
+def _sync_detail_selection(fdf: pd.DataFrame) -> None:
+    """Keep selected row in sync with filtered data; close detail if the SKU is gone."""
+    if not st.session_state.get(DETAIL_OPEN_KEY):
+        return
+    sp = st.session_state.get(SELECTED_PRODUCT_KEY)
+    if fdf.empty or not isinstance(sp, dict) or not sp:
+        _close_detail_panel()
+        return
+    for i in range(len(fdf)):
+        if _same_listing_row(fdf.iloc[i], sp):
+            st.session_state[SELECTED_PRODUCT_KEY] = row_to_selected_product(fdf.iloc[i])
+            return
+    _close_detail_panel()
+
+
+def _one_line_summary(row: pd.Series, fr: dict | None) -> str:
+    if fr:
+        reasons = fr.get("future_reasons") or []
+        if reasons and str(reasons[0]).strip():
+            s = str(reasons[0]).strip()
+            return (s[:140] + "…") if len(s) > 143 else s
+    bullets = row.get("bullets") or []
+    if isinstance(bullets, list) and bullets:
+        s = str(bullets[0]).strip()
+        return (s[:140] + "…") if len(s) > 143 else s
+    ben = row.get("product_benefits")
+    if ben is not None and str(ben).strip():
+        s = _clean_text_field(ben)
+        return (s[:140] + "…") if len(s) > 143 else s
+    return "—"
+
+
+def _json_safe_value(v: Any) -> Any:
+    if v is None:
+        return None
+    try:
+        if pd.isna(v):
+            return None
+    except (TypeError, ValueError):
+        pass
+    if isinstance(v, (np.integer, np.floating)):
+        return v.item()
+    if hasattr(v, "item") and not isinstance(v, (bytes, str, dict, list)):
+        try:
+            return v.item()
+        except Exception:
+            pass
+    if isinstance(v, (list, dict, str, bool, int, float)):
+        return v
+    return str(v)
+
+
+def row_to_selected_product(row: pd.Series) -> dict[str, Any]:
+    return {str(k): _json_safe_value(v) for k, v in row.items()}
+
+
+def _same_listing_row(series: pd.Series, stored: dict | None) -> bool:
+    if not stored:
+        return False
+    if str(series.get("asin") or "") != str(stored.get("asin") or ""):
+        return False
+    sq = str(series.get("query") or "")
+    bq = str(stored.get("query") or "")
+    su = str(series.get("url") or "")
+    bu = str(stored.get("url") or "")
+    if sq and bq and sq != bq:
+        return False
+    if su and bu and su != bu:
+        return False
+    return True
+
+
+def _fdf_iloc_for_row(fdf: pd.DataFrame, row: pd.Series) -> int:
+    """Index in fdf (0..len-1) for the same listing row (handles duplicate ASINs)."""
+    a = str(row.get("asin") or "")
+    q = str(row.get("query") or "")
+    u = str(row.get("url") or "")
+    for i in range(len(fdf)):
+        r = fdf.iloc[i]
+        if str(r.get("asin") or "") != a:
+            continue
+        if q and str(r.get("query") or "") != q:
+            continue
+        if u and str(r.get("url") or "") != u:
+            continue
+        return i
+    for i in range(len(fdf)):
+        if str(fdf.iloc[i].get("asin") or "") == a:
+            return i
+    return 0
+
 
 # ---------------------------------------------------------------------------
 # Commercial risk tier (heuristic — for filtering & badges, not legal advice)
@@ -69,7 +177,7 @@ def risk_badge_class(tier: str) -> str:
 # Paths & data loading
 # ---------------------------------------------------------------------------
 
-DATA_FILE = Path(__file__).resolve().parent / "temp_amazon.json"
+DATA_FILE = Path(__file__).resolve().parent / "51-100.json"
 
 # Product benefits themes → keyword hints (matched on `product_benefits` text, case-insensitive).
 # If multiple categories are selected, a row matches if it satisfies any selected theme (OR).
@@ -141,6 +249,25 @@ def _clean_text_field(val: object) -> str:
     return s
 
 
+def _row_listing_facts(row: pd.Series) -> tuple[str, str, str, str]:
+    """Shelf life, benefits, special ingredients, region of origin (normalized + raw keys)."""
+    shelf = _clean_text_field(row.get("product_shelf_life"))
+    if not shelf:
+        shelf = _clean_text_field(row.get("Product Shelf Life"))
+    ben = _clean_text_field(row.get("product_benefits"))
+    if not ben:
+        ben = _clean_text_field(row.get("Product Benefits"))
+    ing = _clean_text_field(row.get("special_ingredients"))
+    if not ing:
+        ing = _clean_text_field(row.get("Special Ingredients"))
+    region = _clean_text_field(row.get("region_of_origin"))
+    if not region:
+        region = _clean_text_field(row.get("Region of Origin"))
+    if not region and isinstance(row.get("item_details"), dict):
+        region = _clean_text_field((row.get("item_details") or {}).get("Region of Origin"))
+    return shelf, ben, ing, region
+
+
 def parse_price_to_float(price: object) -> float:
     if price is None or (isinstance(price, float) and np.isnan(price)):
         return float("nan")
@@ -203,6 +330,16 @@ def load_products(path: Path | None = None) -> pd.DataFrame:
         df["product_benefits"] = df["Product Benefits"].map(_clean_text_field)
     else:
         df["product_benefits"] = ""
+
+    if "Special Ingredients" in df.columns:
+        df["special_ingredients"] = df["Special Ingredients"].map(_clean_text_field)
+    else:
+        df["special_ingredients"] = ""
+
+    if "Region of Origin" in df.columns:
+        df["region_of_origin"] = df["Region of Origin"].map(_clean_text_field)
+    else:
+        df["region_of_origin"] = ""
 
     df["opportunity_score"] = df.apply(compute_opportunity_score, axis=1)
     df["risk_level"] = df.apply(estimate_risk_level, axis=1)
@@ -299,32 +436,72 @@ def apply_filters(
     return out
 
 
-def sort_dataframe(df: pd.DataFrame, sort_key: str) -> pd.DataFrame:
+def _normalize_sort_key(raw: object) -> str:
+    """Map sidebar value to internal keys (avoids silent no-op when key does not match)."""
+    valid: tuple[str, ...] = tuple(SORT_LABELS.keys())
+    if raw in valid:
+        return str(raw)
+    # Session / older builds: index into same option order as sidebar
+    if isinstance(raw, int) and raw in range(len(valid)):
+        return valid[raw]
+    if isinstance(raw, str):
+        t = raw.strip()
+        if t in valid:
+            return t
+        tl = t.lower()
+        for k, lab in SORT_LABELS.items():
+            if lab.lower() == tl:
+                return k
+    return "best_opportunity"
+
+
+def sort_dataframe(df: pd.DataFrame, sort_key: object) -> pd.DataFrame:
     """Sort filtered rows; secondary keys break ties so order is not arbitrary."""
     out = df.copy()
-    if sort_key == "highest_rating":
+    if out.empty:
+        return out
+
+    key = _normalize_sort_key(sort_key)
+    # Coerce so we never sort object/string columns lexicographically by accident.
+    if "rating" in out.columns:
+        out["rating"] = pd.to_numeric(out["rating"], errors="coerce")
+    if "review_count" in out.columns:
+        out["review_count"] = pd.to_numeric(out["review_count"], errors="coerce").fillna(0)
+    if "price_num" in out.columns:
+        out["price_num"] = pd.to_numeric(out["price_num"], errors="coerce")
+    if "opportunity_score" in out.columns:
+        out["opportunity_score"] = pd.to_numeric(out["opportunity_score"], errors="coerce").fillna(0)
+
+    na_last: dict[str, Any] = {"na_position": "last"}
+    if key == "highest_rating":
         return out.sort_values(
             ["rating", "review_count", "opportunity_score", "asin"],
             ascending=[False, False, False, True],
-            na_position="last",
+            **na_last,
         )
-    if sort_key == "most_reviews":
+    if key == "most_reviews":
         return out.sort_values(
             ["review_count", "rating", "opportunity_score", "asin"],
             ascending=[False, False, False, True],
+            **na_last,
         )
-    if sort_key == "lowest_price":
+    if key == "lowest_price":
         return out.sort_values(
             ["price_num", "rating", "review_count", "asin"],
             ascending=[True, False, False, True],
-            na_position="last",
+            **na_last,
         )
-    if sort_key == "best_opportunity":
+    if key == "best_opportunity":
         return out.sort_values(
             ["opportunity_score", "review_count", "rating", "asin"],
             ascending=[False, False, False, True],
+            **na_last,
         )
-    return out
+    return out.sort_values(
+        ["opportunity_score", "review_count", "rating", "asin"],
+        ascending=[False, False, False, True],
+        **na_last,
+    )
 
 
 def filter_fingerprint(
@@ -363,59 +540,88 @@ def price_display(row: pd.Series) -> str:
 
 CUSTOM_CSS = """
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
   :root {
-    --bg: #fafafa;
+    --bg: #f4f7f9;
     --surface: #ffffff;
-    --line: #e8e8e8;
-    --line-strong: #d4d4d4;
-    --text: #171717;
-    --text-2: #525252;
-    --text-3: #737373;
-    --accent: #262626;
-    --accent-soft: #f5f5f5;
-    --font: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --line: #dfe1e6;
+    --line-strong: #c1c7d0;
+    --text: #172b4d;
+    --hero-navy: #091e42;
+    --text-2: #42526e;
+    --text-3: #5e6c84;
+    --primary: #0052cc;
+    --primary-hover: #0747a6;
+    --primary-soft: #deebff;
+    --accent: #0052cc;
+    --accent-soft: #f4f5f7;
+    --success-bg: #ecfdf5;
+    --success-border: #a7f3d0;
+    --success-text: #065f46;
+    --warn-bg: #fffbeb;
+    --warn-border: #fde68a;
+    --warn-text: #92400e;
+    --tag-gray-bg: #f1f5f9;
+    --tag-gray-text: #475569;
+    --font: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --space-xs: 8px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --radius-card: 8px;
+    --radius-pill: 999px;
   }
   .stApp {
     background: var(--bg) !important;
     font-family: var(--font) !important;
+    color: var(--text) !important;
   }
-  header[data-testid="stHeader"],
-  [data-testid="stHeader"] {
-    display: flex !important;
-    align-items: center !important;
-    visibility: visible !important;
-    height: auto !important;
-    min-height: 2.75rem !important;
-    max-height: none !important;
-    overflow: visible !important;
-    padding: 0.35rem 0.75rem !important;
-    margin: 0 !important;
+  /* Inline hero — no card; sits on page background */
+  .ts-page-hero {
+    margin: 0 0 2rem 0;
+    padding: 0.25rem 0 0.5rem 0;
+  }
+  h1.ts-hero-title {
+    font-size: clamp(2.125rem, 2.8vw, 2.75rem) !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.045em !important;
+    color: var(--hero-navy) !important;
+    margin: 0 0 0.5rem 0 !important;
+    line-height: 1.08 !important;
+    font-family: var(--font) !important;
+    background: transparent !important;
     border: none !important;
-    border-bottom: 1px solid var(--line) !important;
-    background: var(--surface) !important;
-    box-shadow: none !important;
-    position: relative !important;
-    z-index: 1002 !important;
+    padding: 0 !important;
   }
-  [data-testid="stExpandSidebarButton"],
-  header[data-testid="stHeader"] button {
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    z-index: 10050 !important;
-    position: relative !important;
+  p.ts-hero-tagline {
+    font-size: 0.9375rem !important;
+    font-weight: 400 !important;
+    color: var(--text-3) !important;
+    line-height: 1.55 !important;
+    margin: 0 !important;
+    max-width: 38rem !important;
+    letter-spacing: 0.01em !important;
   }
-  header[data-testid="stHeader"] {
-    pointer-events: auto !important;
-    z-index: 10040 !important;
+  .main .block-container, section.main .block-container {
+    font-size: 14px !important;
+    line-height: 1.55 !important;
   }
+  /* Default Streamlit header hidden — brand bar below */
+  [data-testid="stHeader"] {
+    display: none !important;
+  }
+  /* Built-in Streamlit sidebar hidden — filters render in the first main column */
   [data-testid="stSidebar"],
   section[data-testid="stSidebar"] {
-    visibility: visible !important;
-    opacity: 1 !important;
+    display: none !important;
   }
-  /* Do NOT hide [data-testid="stToolbar"] — it contains stExpandSidebarButton; hiding it removes the sidebar toggle. */
+  [data-testid="collapsedControl"] {
+    display: none !important;
+  }
+  [data-testid="stExpandSidebarButton"] {
+    display: none !important;
+  }
   [data-testid="stDecoration"] {
     display: none !important;
   }
@@ -430,65 +636,32 @@ CUSTOM_CSS = """
     margin-top: 0 !important;
   }
   .block-container {
-    padding-top: 1.75rem !important;
+    padding-top: 2.25rem !important;
     padding-bottom: 5rem !important;
-    max-width: 1200px !important;
+    max-width: min(1440px, 98vw) !important;
   }
-  [data-testid="stSidebar"] {
-    background: #f7f7f7 !important;
-    border-right: 1px solid var(--line) !important;
-  }
-  [data-testid="stSidebar"] .block-container {
-    padding-top: 1.5rem !important;
-    padding-bottom: 2rem !important;
-    padding-left: 1.25rem !important;
-    padding-right: 1.25rem !important;
-  }
-  [data-testid="stSidebar"] h3 {
-    font-size: 0.65rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.12em !important;
-    text-transform: uppercase !important;
-    color: var(--text-3) !important;
-    margin-bottom: 0.65rem !important;
-  }
-  [data-testid="stSidebar"] label,
-  [data-testid="stSidebar"] .stMarkdown p {
-    color: var(--text-2) !important;
-    font-size: 0.8125rem !important;
-  }
-  [data-testid="stSidebar"] [data-baseweb="select"] > div,
-  [data-testid="stSidebar"] input {
-    border-radius: 6px !important;
-    border-color: var(--line) !important;
-    background: var(--surface) !important;
-    font-size: 0.8125rem !important;
-  }
-  [data-testid="stSidebar"] .stSlider label {
-    font-size: 0.75rem !important;
-    color: var(--text-3) !important;
-  }
-  h1 {
-    font-weight: 600 !important;
-    letter-spacing: -0.035em !important;
+  .main h1:not(.ts-hero-title) {
+    font-weight: 700 !important;
+    letter-spacing: -0.03em !important;
     color: var(--text) !important;
-    font-size: 1.5rem !important;
+    font-size: 1.75rem !important;
+    line-height: 1.25 !important;
     font-family: var(--font) !important;
   }
   .subtitle {
-    color: var(--text-2) !important;
+    color: var(--text-3) !important;
     font-size: 0.9375rem !important;
-    margin-top: 0.35rem !important;
-    line-height: 1.5 !important;
-    max-width: 32rem !important;
+    margin-top: 0 !important;
+    line-height: 1.55 !important;
+    max-width: 40rem !important;
     font-weight: 400 !important;
   }
   div[data-testid="stMetric"] {
     background: var(--surface) !important;
     border: 1px solid var(--line) !important;
-    border-radius: 8px !important;
-    padding: 1rem 1.1rem !important;
-    box-shadow: none !important;
+    border-radius: var(--radius-card) !important;
+    padding: 1rem 1.15rem !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
   }
   div[data-testid="stMetric"] label {
     color: var(--text-3) !important;
@@ -501,32 +674,32 @@ CUSTOM_CSS = """
     font-weight: 600 !important;
   }
   .section-head {
-    margin: 0 0 1.25rem 0;
-    padding-bottom: 1rem;
+    margin: 0 0 var(--space-xl) 0;
+    padding-bottom: var(--space-md);
     border-bottom: 1px solid var(--line);
   }
   .section-head-k {
-    font-size: 0.62rem;
+    font-size: 12px;
     text-transform: uppercase;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.12em;
     color: var(--text-3);
     font-weight: 600;
-    margin: 0 0 0.35rem 0;
+    margin: 0 0 var(--space-sm) 0;
   }
   .section-head-t {
-    font-size: 1.0625rem;
+    font-size: 1.125rem;
     font-weight: 600;
     color: var(--text);
     letter-spacing: -0.02em;
-    margin: 0 0 0.35rem 0;
+    margin: 0 0 var(--space-sm) 0;
     line-height: 1.3;
   }
   .section-head-s {
-    font-size: 0.8125rem;
+    font-size: 13px;
     color: var(--text-2);
     margin: 0;
-    line-height: 1.5;
-    max-width: 40rem;
+    line-height: 1.55;
+    max-width: 42rem;
   }
   .md-master {
     margin-top: 0.25rem;
@@ -552,16 +725,17 @@ CUSTOM_CSS = """
     background: #fafafa !important;
   }
   div[data-testid="stRadio"] > div > label:has(input:checked) {
-    border-color: var(--text) !important;
-    background: var(--accent-soft) !important;
+    border-color: #93c5fd !important;
+    background: var(--primary-soft) !important;
+    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.12) !important;
   }
   .detail-shell {
     background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 1.5rem 1.5rem;
+    border-radius: var(--radius-card);
+    padding: var(--space-md) 1.25rem;
     min-height: 420px;
-    box-shadow: none;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   }
   .detail-kicker {
     font-size: 0.62rem;
@@ -572,10 +746,10 @@ CUSTOM_CSS = """
     margin-bottom: 0.65rem;
   }
   .detail-title {
-    font-size: 1.125rem;
+    font-size: 16px;
     font-weight: 600;
     color: var(--text);
-    line-height: 1.4;
+    line-height: 1.45;
     margin: 0 0 0.75rem 0;
     letter-spacing: -0.02em;
   }
@@ -589,10 +763,10 @@ CUSTOM_CSS = """
   .score-pill-lg {
     display: inline-block;
     font-size: 0.7rem;
-    font-weight: 500;
-    color: var(--text-2);
-    background: var(--accent-soft);
-    border: 1px solid var(--line);
+    font-weight: 600;
+    color: var(--primary);
+    background: var(--primary-soft);
+    border: 1px solid #bfdbfe;
     border-radius: 6px;
     padding: 0.2rem 0.55rem;
     letter-spacing: 0.02em;
@@ -602,8 +776,42 @@ CUSTOM_CSS = """
     grid-template-columns: 1fr 1fr 1fr;
     gap: 0.65rem 1rem;
     margin: 1rem 0;
-    font-size: 0.8125rem;
+    font-size: 13px;
   }
+  .detail-grid.detail-grid--panel {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .dw-muted {
+    font-size: 0.8125rem;
+    color: var(--text-3);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .dw-score-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0 0 12px 0;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .dw-score-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .dw-sl {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-3);
+    flex-shrink: 0;
+  }
+  .dw-sv { font-weight: 700; letter-spacing: -0.03em; }
+  .dw-sv-forecast { font-size: 22px; color: var(--primary); }
+  .dw-sv-current { font-size: 17px; font-weight: 600; color: #42526e; }
   .detail-grid div span.label {
     display: block;
     font-size: 0.62rem;
@@ -652,36 +860,61 @@ CUSTOM_CSS = """
     margin: 0;
   }
   .detail-extras .extra-body.muted { color: var(--text-3); font-style: normal; }
+  .dw-card .detail-extras.dw-listing-detail-extras {
+    margin-top: 0.35rem;
+    padding-top: 0;
+    border-top: none;
+  }
   .detail-asin {
     font-size: 0.7rem;
     color: var(--text-3);
     font-family: ui-monospace, monospace;
     margin-top: 0.65rem;
   }
+  .dw-overview .detail-asin {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+  }
   .tag-pill {
     display: inline-block;
-    font-size: 0.62rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-2);
-    background: var(--accent-soft);
+    letter-spacing: 0.06em;
+    color: var(--tag-gray-text);
+    background: var(--tag-gray-bg);
     border: 1px solid var(--line);
-    border-radius: 4px;
-    padding: 0.15rem 0.45rem;
+    border-radius: 6px;
+    padding: 0.2rem 0.5rem;
     margin-bottom: 0;
+    font-weight: 600;
   }
   .badge-risk {
     display: inline-block;
-    font-size: 0.65rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    border-radius: 4px;
-    padding: 0.2rem 0.5rem;
-    border: 1px solid var(--line);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    border-radius: 8px;
+    padding: 8px 14px;
+    line-height: 1.2;
+    border: 1.5px solid var(--line);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
   }
-  .badge-risk-low { color: #14532d; background: #f7fdf9; border-color: #bbf7d0; }
-  .badge-risk-mid { color: #92400e; background: #fffbeb; border-color: #fde68a; }
-  .badge-risk-high { color: #991b1b; background: #fef2f2; border-color: #fecaca; }
+  .badge-risk-low {
+    color: #14532d;
+    background: linear-gradient(180deg, #f0fdf4 0%, #ecfdf5 100%);
+    border-color: #86efac;
+  }
+  .badge-risk-mid {
+    color: #92400e;
+    background: linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%);
+    border-color: #fcd34d;
+  }
+  .badge-risk-high {
+    color: #57534e;
+    background: linear-gradient(180deg, #fafaf9 0%, #f5f5f4 100%);
+    border-color: #d6d3d1;
+  }
   .detail-ai-wrap {
     margin-top: 1.25rem;
     padding-top: 1.1rem;
@@ -696,28 +929,346 @@ CUSTOM_CSS = """
     margin: 0 0 0.65rem 0;
   }
   .section-label {
-    font-size: 0.62rem !important;
+    font-size: 12px !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.12em !important;
+    letter-spacing: 0.1em !important;
     color: var(--text-3) !important;
     font-weight: 600 !important;
-    margin: 0 0 0.35rem 0 !important;
+    margin: 0 0 var(--space-sm) 0 !important;
   }
   .sort-hint {
-    font-size: 0.8125rem !important;
+    font-size: 13px !important;
     color: var(--text-2) !important;
-    margin: 0 0 1rem 0 !important;
+    margin: 0 0 var(--space-md) 0 !important;
+    line-height: 1.55 !important;
   }
+  .pill-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--tag-gray-text);
+    background: var(--tag-gray-bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    padding: 5px 11px;
+    line-height: 1.2;
+  }
+  .fc-shell {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: var(--space-md) 1.25rem;
+    margin-bottom: var(--space-md);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+  .fc-shell--tight { padding-bottom: 0.85rem !important; }
+  .fc-shell-note {
+    font-size: 12px !important;
+    color: var(--text-3) !important;
+    margin: 10px 0 0 0 !important;
+    line-height: 1.45 !important;
+  }
+  .fc-kicker { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-3); font-weight: 600; margin: 0 0 var(--space-sm) 0; }
+  .fc-lede { font-size: 13px; color: var(--text-2); line-height: 1.55; margin: var(--space-md) 0 0 0; max-width: 44rem; }
+  .fc-drivers { display: flex; flex-wrap: wrap; gap: var(--space-sm) 10px; margin-bottom: 0; }
+  .fc-driver-pill {
+    font-size: 12px; font-weight: 500;
+    color: var(--text-2); background: #f1f5f9; border: 1px solid var(--line);
+    border-radius: 999px; padding: 4px 10px;
+  }
+  .fc-decision-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: var(--space-md);
+    margin-bottom: var(--space-lg);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .fc-decision-card:hover {
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.07);
+    border-color: #e2e8f0;
+  }
+  .fc-decision-card.fc-decision-card--selected {
+    border-color: #93c5fd;
+    background: linear-gradient(180deg, #ffffff 0%, #eff6ff 100%);
+    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.18);
+  }
+  .fc-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+    margin: 0 0 var(--space-md) 0;
+  }
+  .fc-divider {
+    height: 1px;
+    background: var(--line);
+    margin: var(--space-md) 0;
+    border: none;
+  }
+  .fc-quick-signal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+  }
+  .fc-score-block { flex: 1; min-width: 140px; }
+  .fc-score-num {
+    font-size: 28px;
+    font-weight: 600;
+    color: #059669;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+  .fc-score-denom {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-3);
+  }
+  .fc-conf-row {
+    margin-top: var(--space-sm);
+  }
+  .fc-conf {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-2);
+  }
+  .fc-conf-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: #94a3b8;
+  }
+  .fc-conf-high .fc-conf-dot { background: #64748b; }
+  .fc-conf-med .fc-conf-dot { background: #94a3b8; }
+  .fc-conf-low .fc-conf-dot { background: #cbd5e1; }
+  .fc-signal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-end;
+    max-width: 100%;
+  }
+  .fc-section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    color: var(--text-3);
+    margin: var(--space-md) 0 var(--space-sm) 0;
+  }
+  .fc-section-label:first-of-type { margin-top: 0; }
+  .fc-bullet-list {
+    margin: 0;
+    padding-left: 1.15rem;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text-2);
+  }
+  .fc-bullet-list li { margin-bottom: 8px; }
+  .fc-action-highlight {
+    font-size: 0.875rem;
+    line-height: 1.55;
+    font-weight: 500;
+    color: var(--success-text);
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
+    border-radius: var(--radius-card);
+    padding: 12px 14px;
+    margin-top: var(--space-sm);
+  }
+  .buyer-action-box {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
+    border-radius: var(--radius-card);
+    padding: 12px 14px;
+    margin-top: 2px;
+  }
+  .buyer-action-icon {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #10b981;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    margin-top: 1px;
+  }
+  .buyer-action-text {
+    font-size: 0.875rem;
+    line-height: 1.55;
+    font-weight: 500;
+    color: var(--success-text);
+    margin: 0;
+  }
+  .fc-adv-note {
+    font-size: 12px;
+    color: var(--text-3);
+    margin-top: var(--space-md);
+    line-height: 1.5;
+  }
+  .outlook-box {
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--line);
+  }
+  .outlook-k { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-3); font-weight: 600; margin-bottom: var(--space-sm); }
+  .outlook-row { font-size: 13px; color: var(--text-2); line-height: 1.55; margin-bottom: 8px; }
   .pcard {
     background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 1.25rem 1.35rem;
-    margin-bottom: 0.75rem;
-    box-shadow: none;
-    transition: border-color 0.15s ease;
+    border-radius: var(--radius-card);
+    padding: var(--space-md);
+    margin-bottom: var(--space-lg);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
   }
-  .pcard:hover { border-color: var(--line-strong); }
+  .pcard:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  }
+  .pcard.pcard--selected {
+    border-color: #93c5fd;
+    background: linear-gradient(180deg, #ffffff 0%, #eff6ff 100%);
+    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+  }
+  .pcard-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .pcard-tags .badge-risk {
+    font-size: 11px;
+    padding: 5px 10px;
+    font-weight: 600;
+  }
+  .pcard-title-row {
+    margin-bottom: 10px;
+  }
+  .pcard-metrics {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 1.25rem;
+    margin: 0 0 8px 0;
+    font-size: 0.8125rem;
+    color: var(--text-3);
+  }
+  .pcard-highlight-zone {
+    font-size: 0.8125rem;
+    color: var(--text-2);
+    line-height: 1.45;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border-radius: 6px;
+    border: 1px solid #f1f5f9;
+    margin-top: 4px;
+  }
+  .pcard-highlight-zone ul { margin: 0; padding-left: 1.1rem; }
+  .pcard-highlight-zone li { margin: 0 0 4px 0; }
+  .panel-col-head {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-3);
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  .ts-inspection-subhead {
+    margin: 0.35rem 0 1rem 0 !important;
+    padding-bottom: 0.65rem !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+  /* Inner inspection content: cards sit on the column chrome; no forced min-height (column scrolls) */
+  .detail-workspace {
+    background: transparent;
+    border: none;
+    padding: 0;
+    border-radius: 0;
+    min-height: 0;
+    box-sizing: border-box;
+    margin-top: 0;
+  }
+  section[data-testid="stMain"] [data-testid="stVerticalBlock"]:has(.ts-inspect-drawer-marker) .detail-workspace .dw-card {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06) !important;
+  }
+  .dw-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: var(--space-md);
+    margin-top: var(--space-md);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+  .dw-card:first-of-type { margin-top: 0; }
+  .dw-overview .detail-title { margin-top: 0; }
+  .detail-workspace .detail-kicker { margin-bottom: 0.5rem; }
+  .detail-workspace .detail-title {
+    font-size: 1.125rem;
+    line-height: 1.35;
+    margin-bottom: 0.5rem;
+  }
+  .dw-section {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+  .dw-h {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+  }
+  .dw-h--muted {
+    font-size: 0.62rem;
+    color: #94a3b8;
+    letter-spacing: 0.12em;
+  }
+  .dw-tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .dw-ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    font-size: 0.8125rem;
+    color: var(--text-2);
+    line-height: 1.55;
+  }
+  .dw-ul li { margin-bottom: 0.35rem; }
+  .dw-highlights {
+    margin: 0;
+    padding-left: 1.1rem;
+    font-size: 0.78rem;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+  .dw-highlights li { margin-bottom: 0.3rem; }
   .pcard-top {
     display: flex;
     justify-content: space-between;
@@ -727,7 +1278,7 @@ CUSTOM_CSS = """
   }
   .pcard .ptitle {
     margin: 0;
-    font-size: 1.0625rem;
+    font-size: 16px;
     font-weight: 600;
     color: var(--text);
     line-height: 1.35;
@@ -739,31 +1290,37 @@ CUSTOM_CSS = """
     align-items: baseline;
     gap: 0.5rem 1.25rem;
     margin: 0.5rem 0 0.35rem 0;
-    font-size: 0.8125rem;
-    color: var(--text-2);
+    font-size: 13px;
+    color: var(--text-3);
   }
   .pcard-price {
-    font-size: 1.0625rem;
+    font-size: 17px;
     font-weight: 600;
     color: var(--text);
     letter-spacing: -0.02em;
   }
-  .pcard-rating { font-weight: 500; color: var(--text); }
+  .pcard-rating { font-weight: 500; color: var(--text-2); font-size: 13px; }
   .pcard-opp {
     font-size: 0.75rem;
     color: var(--text-3);
     margin-top: 0.35rem;
   }
+  .pcard-actions {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+  }
   .tag-query {
     display: inline-block;
-    font-size: 0.6rem;
+    font-size: 0.65rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-3);
-    background: transparent;
+    letter-spacing: 0.06em;
+    color: var(--tag-gray-text);
+    background: var(--tag-gray-bg);
     border: 1px solid var(--line);
-    border-radius: 4px;
-    padding: 0.12rem 0.4rem;
+    border-radius: 6px;
+    padding: 0.18rem 0.45rem;
     margin-bottom: 0;
   }
   .pcard-bullets {
@@ -794,19 +1351,61 @@ CUSTOM_CSS = """
   hr.sep {
     border: none;
     border-top: 1px solid var(--line);
-    margin: 2rem 0 1.5rem 0;
+    margin: var(--space-xl) 0 var(--space-lg) 0;
   }
   .stButton > button[kind="primary"] {
-    border-radius: 6px !important;
-    font-weight: 500 !important;
-    background: var(--accent) !important;
-    border: 1px solid var(--accent) !important;
-    color: #fafafa !important;
+    border-radius: var(--radius-card) !important;
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    background: var(--primary) !important;
+    border: 1px solid var(--primary) !important;
+    color: #ffffff !important;
     box-shadow: none !important;
   }
   .stButton > button[kind="primary"]:hover {
-    background: #404040 !important;
-    border-color: #404040 !important;
+    background: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+  }
+  .stButton > button[kind="secondary"] {
+    border-radius: var(--radius-card) !important;
+    font-weight: 500 !important;
+    font-size: 0.875rem !important;
+    background: var(--surface) !important;
+    border: 1px solid var(--line-strong) !important;
+    color: var(--text) !important;
+    box-shadow: none !important;
+  }
+  .stButton > button[kind="secondary"]:hover {
+    border-color: #94a3b8 !important;
+    background: #f8fafc !important;
+  }
+  a.ts-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 0.55rem 1.1rem;
+    border-radius: var(--radius-card);
+    font-weight: 600;
+    font-size: 0.875rem;
+    background: var(--primary);
+    color: #ffffff !important;
+    text-decoration: none !important;
+    border: 1px solid var(--primary);
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  a.ts-btn-primary:hover {
+    background: var(--primary-hover);
+    border-color: var(--primary-hover);
+    color: #ffffff !important;
+  }
+  a.ts-btn-primary.ts-btn-block {
+    display: flex;
+    width: 100%;
+  }
+  [data-testid="stLinkButton"] a {
+    border-radius: var(--radius-card) !important;
+    font-weight: 500 !important;
   }
   [data-testid="stCaptionContainer"] p,
   .stCaption {
@@ -898,9 +1497,278 @@ CUSTOM_CSS = """
     line-height: 1.5;
   }
   .copilot-list li { margin-bottom: 0.3rem; }
-  /* Reserve horizontal space so titles don’t sit under the fixed menu chip */
+  [data-testid="stExpander"] details {
+    border: 1px solid var(--line) !important;
+    border-radius: 8px !important;
+    background: var(--surface) !important;
+    padding: 2px 4px !important;
+  }
+  [data-testid="stExpander"] summary {
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: var(--text-2) !important;
+  }
   .main .block-container {
-    padding-left: 2.75rem !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+  /* Gutters between main layout columns (dashboard row) */
+  .block-container > div > div[data-testid="stVerticalBlock"] > div[data-testid="stHorizontalBlock"] {
+    gap: 1.35rem !important;
+    column-gap: 1.35rem !important;
+  }
+  /* Filters column (main row — two-column dashboard) */
+  section[data-testid="stMain"] .block-container > div > div[data-testid="stVerticalBlock"] > div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(1) {
+    position: sticky !important;
+    top: 0.75rem !important;
+    align-self: flex-start !important;
+    max-height: calc(100vh - 1.5rem) !important;
+    overflow-y: auto !important;
+    background: #ffffff !important;
+    border: 1px solid var(--line) !important;
+    border-radius: 8px !important;
+    padding: 0.35rem 0.65rem 0.85rem 0.65rem !important;
+    box-sizing: border-box !important;
+  }
+  /* Center column only (main dashboard row — not nested card button rows) */
+  section[data-testid="stMain"] .block-container > div > div[data-testid="stVerticalBlock"] > div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
+    max-height: calc(100vh - 4.5rem) !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding-right: 0.5rem !important;
+    box-sizing: border-box !important;
+  }
+  /* Right-side inspection drawer: fixed overlay without grabbing the whole main stack.
+     (1) Sibling after the main filter|content row — works when DOM is flat.
+     (2) stVerticalBlock that contains the marker and does NOT contain any stHorizontalBlock
+         under it. The main app wrapper contains the dashboard row (often nested), so it
+         must not match; the drawer stack is a sibling branch and has no row layouts. */
+  section[data-testid="stMain"]
+    div[data-testid="stHorizontalBlock"]
+    ~ div[data-testid="stVerticalBlock"]:has(.ts-inspect-drawer-marker),
+  section[data-testid="stMain"]
+    div[data-testid="stVerticalBlock"]:has(.ts-inspect-drawer-marker):not(:has(div[data-testid="stHorizontalBlock"])) {
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    left: auto !important;
+    width: min(440px, calc(100vw - 1rem)) !important;
+    min-width: 280px !important;
+    max-width: 480px !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    margin: 0 !important;
+    padding: 1rem 1.1rem 1.5rem !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: contain !important;
+    z-index: 100050 !important;
+    background: #ffffff !important;
+    border-left: 3px solid #0052cc !important;
+    box-shadow: -12px 0 40px rgba(9, 30, 66, 0.2) !important;
+    box-sizing: border-box !important;
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+  }
+  .ts-inspect-placeholder {
+    font-size: 0.8125rem !important;
+    color: var(--text-3) !important;
+    line-height: 1.55 !important;
+    margin: 0.35rem 0 0 0 !important;
+    padding: 0.25rem 0.15rem 0 0 !important;
+  }
+  .ts-inspect-kicker {
+    font-size: 0.62rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.12em !important;
+    color: #64748b !important;
+    font-weight: 600 !important;
+    margin: 0 0 0.5rem 0 !important;
+  }
+  .fc-compact-summary {
+    font-size: 12px !important;
+    color: var(--text-2) !important;
+    line-height: 1.45 !important;
+    margin: 0.35rem 0 0 0 !important;
+  }
+  .fc-compact-meta {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    align-items: center !important;
+    margin-top: 6px !important;
+  }
+  .fc-compact-tags {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    margin-top: 6px !important;
+  }
+  /* Bordered scan cards (st.container(border=True)) — Details sits inside box, bottom-right */
+  div[data-testid="stVerticalBlockBorderWrapper"] {
+    border-color: var(--line) !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+    padding: 12px 14px 10px !important;
+    margin-bottom: 0.75rem !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+  }
+  div[data-testid="stVerticalBlockBorderWrapper"]:has(.ts-scan-inner--selected) {
+    border-color: #4c9aff !important;
+    box-shadow: 0 0 0 1px rgba(0, 82, 204, 0.25) !important;
+  }
+  .ts-scan-inner { margin: 0; }
+  .ts-scan-with-rank {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .ts-scan-rank {
+    flex-shrink: 0;
+    min-width: 2.35rem;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.02em;
+    line-height: 1.35;
+    padding-top: 1px;
+  }
+  .ts-scan-with-rank-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .ts-scan-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0 0 10px 0;
+  }
+  .ts-scan-title-row .ts-scan-title-full {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+  }
+  .ts-scan-title-row .badge-risk {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    padding: 4px 10px !important;
+    border-radius: 6px !important;
+    line-height: 1.2 !important;
+    letter-spacing: 0.02em !important;
+    margin-top: 1px;
+    box-shadow: none !important;
+  }
+  .ts-scan-title-full {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    margin: 0 0 10px 0;
+  }
+  .ts-scan-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0 0 6px 0;
+  }
+  .ts-scan-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+  }
+  .ts-scan-score-main {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    flex-shrink: 0;
+  }
+  .ts-scan-score-block {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    margin: 0 0 8px 0;
+  }
+  .ts-scan-score-block--primary { margin-bottom: 6px; }
+  .ts-scan-score-block--secondary { margin-bottom: 8px; }
+  .ts-scan-lbl {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-3);
+  }
+  .ts-scan-val { line-height: 1.15; letter-spacing: -0.03em; }
+  .ts-scan-val--forecast {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .ts-scan-val--current {
+    font-size: 16px;
+    font-weight: 600;
+    color: #42526e;
+  }
+  .ts-scan-line {
+    font-size: 12px;
+    font-weight: 600;
+    color: #42526e;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.01em;
+  }
+  .ts-scan-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 0 0 8px 0;
+  }
+  .ts-scan-tags .pill-tag {
+    font-size: 0.62rem !important;
+    padding: 3px 8px !important;
+    font-weight: 500 !important;
+  }
+  .pill-tag.pill-tag--query {
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    font-size: 0.6rem !important;
+  }
+  .ts-scan-desc {
+    font-size: 12px;
+    color: var(--text-3);
+    line-height: 1.45;
+    margin: 0 0 4px 0;
+  }
+  div[data-testid="stVerticalBlockBorderWrapper"] [data-testid="stHorizontalBlock"] {
+    align-items: flex-end !important;
+    gap: 0.5rem !important;
+    margin-top: 2px !important;
+    margin-bottom: 0 !important;
+  }
+  div[data-testid="stVerticalBlockBorderWrapper"] [data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(1) {
+    min-height: 0 !important;
+  }
+  div[data-testid="stVerticalBlockBorderWrapper"] [data-testid="stHorizontalBlock"] button {
+    font-size: 0.8125rem !important;
+    min-height: 2.1rem !important;
+  }
+  [data-testid="stToolbar"],
+  header[data-testid="stToolbar"] {
+    z-index: 100095 !important;
+    visibility: visible !important;
   }
 </style>
 """
@@ -925,7 +1793,7 @@ def render_sidebar_menu_button() -> None:
     )
     components.html(
         f"""
-<div style="position:fixed;top:3.35rem;left:0.85rem;z-index:10060;pointer-events:auto;">
+<div style="position:fixed;top:1rem;left:0.85rem;z-index:10060;pointer-events:auto;">
   <button type="button" title="Open filters sidebar" aria-label="Open sidebar"
     onclick={json.dumps(_js)}
     style="background:#ffffff;border:1px solid #e8e8e8;border-radius:8px;width:40px;height:40px;cursor:pointer;
@@ -943,10 +1811,13 @@ def render_sidebar_menu_button() -> None:
 
 def render_header():
     st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
-    render_sidebar_menu_button()
-    st.markdown("# TrendScout")
     st.markdown(
-        '<p class="subtitle">Discover and evaluate CPG listings for retail assortment — tea, supplements, food, and more.</p>',
+        """
+<div class="ts-page-hero">
+  <h1 class="ts-hero-title">TrendScout</h1>
+  <p class="ts-hero-tagline">Retail buying signals</p>
+</div>
+        """,
         unsafe_allow_html=True,
     )
 
@@ -968,6 +1839,193 @@ def render_metrics(df: pd.DataFrame):
         st.metric("Max reviews", f"{max_rev:,}" if n else "—")
 
 
+def _fc_confidence_row_html(conf_raw: str) -> str:
+    c = (conf_raw or "").strip().lower()
+    tier = "fc-conf-low"
+    if c == "high":
+        tier = "fc-conf-high"
+    elif c == "medium":
+        tier = "fc-conf-med"
+    label = html.escape((conf_raw or "—").strip())
+    return (
+        f'<div class="fc-conf-row"><span class="fc-conf {tier}">'
+        f'<span class="fc-conf-dot" aria-hidden="true"></span>{label}</span></div>'
+    )
+
+
+def _fc_why_now_bullets(fr: dict) -> list[str]:
+    lines: list[str] = []
+    for r in (fr.get("future_reasons") or [])[:6]:
+        s = str(r).strip()
+        if not s:
+            continue
+        if len(s) > 180:
+            s = s[:177] + "…"
+        lines.append(s)
+    return lines or ["Limited calendar overlap in the next 30 days — treat as exploratory."]
+
+
+def _scan_card_container():
+    """Product row wrapper so the Details button sits inside the same bordered box."""
+    try:
+        return st.container(border=True)
+    except TypeError:
+        return st.container()
+
+
+def render_forecast_intro(upcoming_events: list) -> None:
+    """Section title + driver shell (full width)."""
+    st.markdown(
+        """
+<div class="section-head">
+  <p class="section-head-k">Forecast</p>
+  <p class="section-head-t">30-Day Opportunity Forecast</p>
+  <p class="section-head-s">Calendar rules + listing text → forward-looking <strong>signals</strong>. Not a demand forecast.</p>
+</div>
+        """,
+        unsafe_allow_html=True,
+    )
+    driver_html = ""
+    for ev in upcoming_events[:8]:
+        nm = html.escape(str(ev.get("name") or ""))
+        driver_html += f'<span class="fc-driver-pill">{nm}</span>'
+    if not driver_html:
+        driver_html = '<span class="fc-driver-pill">No drivers in window (rules)</span>'
+
+    st.markdown(
+        f"""
+<div class="fc-shell fc-shell--tight">
+  <p class="fc-kicker">Next 30 days · active drivers</p>
+  <div class="fc-drivers">{driver_html}</div>
+  <p class="fc-shell-note">Ranked by forward opportunity score — open <strong>Details</strong> for full analysis.</p>
+</div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
+def render_forecast_cards_only(
+    top_fc: pd.DataFrame,
+    fdf: pd.DataFrame,
+    forecast_by_asin: dict[str, dict] | None,
+    fp_key: str,
+) -> None:
+    """Compact forecast rows — open the right panel only via Details."""
+    if top_fc.empty:
+        st.caption("No products to score under current filters.")
+        return
+
+    fmap = forecast_by_asin or {}
+    sel = st.session_state.get(SELECTED_PRODUCT_KEY)
+    detail_open = bool(st.session_state.get(DETAIL_OPEN_KEY))
+
+    def _pick_fc(idx_val: int) -> None:
+        r = top_fc.iloc[idx_val]
+        resolved = fdf.iloc[_fdf_iloc_for_row(fdf, r)]
+        st.session_state[SELECTED_PRODUCT_KEY] = row_to_selected_product(resolved)
+        st.session_state[DETAIL_OPEN_KEY] = True
+
+    for idx, (_, row) in enumerate(top_fc.iterrows()):
+        aid = str(row.get("asin") or "")
+        fr = fmap.get(aid) or {}
+        title_raw = str(row.get("amazon_title") or "—")
+        title = html.escape(title_raw[:82] + ("…" if len(title_raw) > 82 else ""))
+        fs = float(row.get("future_opportunity_score") or 0)
+        cur_fit = float(row.get("opportunity_score") or 0)
+        flab = html.escape(str(row.get("forecast_label") or "—"))
+        badges = row.get("forecast_badges") or []
+        bl = badges if isinstance(badges, list) else []
+        tag_pills = "".join(
+            f'<span class="pill-tag">{html.escape(str(b))}</span>' for b in bl[:3]
+        )
+        if flab and flab != "—":
+            tag_pills += f'<span class="pill-tag">{flab}</span>'
+
+        row_iloc = _fdf_iloc_for_row(fdf, row)
+        cur = fdf.iloc[row_iloc]
+        summary = html.escape(_one_line_summary(cur, fr))
+        if len(summary) > 118:
+            summary = summary[:115] + "…"
+        is_sel = detail_open and isinstance(sel, dict) and _same_listing_row(cur, sel)
+        sel_cls = " ts-scan-inner--selected" if is_sel else ""
+        fs_str = html.escape(f"{fs:.1f}")
+        cur_str = html.escape(f"{cur_fit:.1f}")
+        rank_n = idx + 1
+        rank_label = html.escape(f"#{rank_n}")
+        risk_tier = str(cur.get("risk_level") or "").strip() or estimate_risk_level(cur)
+        rb = risk_badge_class(risk_tier)
+        risk_esc = html.escape(risk_tier)
+        risk_badge_html = f'<span class="{rb}">{risk_esc}</span>'
+
+        card_html = f"""
+<div class="ts-scan-inner ts-scan-inner--forecast{sel_cls}">
+  <div class="ts-scan-with-rank">
+    <span class="ts-scan-rank" aria-label="Rank {rank_n}">{rank_label}</span>
+    <div class="ts-scan-with-rank-body">
+      <div class="ts-scan-title-row">
+        <div class="ts-scan-title-full">{title}</div>
+        {risk_badge_html}
+      </div>
+      <div class="ts-scan-score-block ts-scan-score-block--primary">
+        <span class="ts-scan-lbl">30-Day Forecast</span>
+        <span class="ts-scan-val ts-scan-val--forecast">{fs_str}</span>
+      </div>
+      <div class="ts-scan-score-block ts-scan-score-block--secondary">
+        <span class="ts-scan-lbl">Current Score</span>
+        <span class="ts-scan-val ts-scan-val--current">{cur_str}</span>
+      </div>
+      <div class="ts-scan-tags">{tag_pills}</div>
+      <p class="ts-scan-desc">{summary}</p>
+    </div>
+  </div>
+</div>
+"""
+        with _scan_card_container():
+            st.markdown(card_html, unsafe_allow_html=True)
+            _pad, _btn = st.columns([3, 1])
+            with _btn:
+                st.button(
+                    "Details",
+                    key=f"fc_det_{fp_key}_{idx}",
+                    on_click=_pick_fc,
+                    args=(idx,),
+                    type="primary" if is_sel else "secondary",
+                    use_container_width=True,
+                )
+
+
+def render_persistent_detail_panel(
+    fdf: pd.DataFrame,
+    forecast_by_asin: dict[str, dict] | None,
+) -> None:
+    """Detail UI in the third main column — wide enough for normal text wrapping."""
+    st.button(
+        "← Back to results",
+        key="ts_back_to_results",
+        on_click=_close_detail_panel,
+        use_container_width=True,
+    )
+    if fdf.empty:
+        st.caption("No products in view — adjust filters.")
+        return
+
+    sp = st.session_state.get(SELECTED_PRODUCT_KEY)
+    row: pd.Series | None = None
+    if isinstance(sp, dict) and sp:
+        for i in range(len(fdf)):
+            if _same_listing_row(fdf.iloc[i], sp):
+                row = fdf.iloc[i]
+                break
+    if row is None:
+        st.caption("Select a product from Forecast or All results.")
+        return
+
+    aid = str(row.get("asin") or "")
+    fr = (forecast_by_asin or {}).get(aid) if forecast_by_asin else None
+
+    render_detail_panel(row, forecast=fr, panel_mode=True)
+
+
 def format_rec_radio_label(asin: str, top5: pd.DataFrame) -> str:
     rows = top5.reset_index(drop=True)
     try:
@@ -982,7 +2040,229 @@ def format_rec_radio_label(asin: str, top5: pd.DataFrame) -> str:
     return f"#{idx}  {short}\n    {sc:.0f} fit · {risk}"
 
 
-def render_detail_panel(row: pd.Series) -> None:
+def _gpt_buyer_session_keys(row: pd.Series) -> tuple[str, str, str]:
+    """Session state keys for cached GPT analysis per listing (detail drawer)."""
+    raw = str(row.get("asin") or "").strip() or hashlib.sha256(
+        f"{row.get('url') or ''}|{row.get('query') or ''}".encode()
+    ).hexdigest()[:16]
+    safe = re.sub(r"[^0-9A-Za-z]", "_", raw)[:48]
+    pfx = f"ts_gpt_buyer_{safe}"
+    return f"{pfx}_result", f"{pfx}_err", f"{pfx}_btn"
+
+
+def _render_gpt_buyer_section(row: pd.Series) -> None:
+    """OpenAI buyer screening in the detail drawer (same engine as Buyer Decision Assistant)."""
+    k_res, k_err, k_btn = _gpt_buyer_session_keys(row)
+    with st.expander("GPT buyer analysis", expanded=False):
+        st.caption(
+            "Same screening model as **Buyer Decision Assistant** — not medical, legal, or regulatory advice."
+        )
+        if not os.environ.get("OPENAI_API_KEY", "").strip():
+            st.info("Set **OPENAI_API_KEY** in `.env` to run analysis.")
+            return
+        if st.button("Run GPT analysis", key=k_btn, type="secondary", use_container_width=True):
+            st.session_state[k_err] = None
+            st.session_state[k_res] = None
+            try:
+                product_name, product_info = format_product_context_for_analysis(row)
+                st.session_state[k_res] = analyze_product(product_name, product_info)
+            except Exception as e:
+                st.session_state[k_err] = str(e)
+            st.rerun()
+        err = st.session_state.get(k_err)
+        if err:
+            st.error(html.escape(str(err)))
+        res = st.session_state.get(k_res)
+        if isinstance(res, dict) and res:
+            render_copilot_gpt_result(res, show_heading=False, use_chat_message=False)
+
+
+def _render_detail_workspace(row: pd.Series, forecast: dict | None) -> None:
+    """Right-column inspection layout for All results (master–detail; no modal)."""
+    fr = forecast
+    title = html.escape(str(row.get("amazon_title") or "—"))
+    q = html.escape(str(row.get("query") or "—"))
+    price = html.escape(price_display(row))
+    url = str(row.get("url") or "")
+    score = float(row.get("opportunity_score") or 0)
+    rating = row.get("rating", "—")
+    rev = int(row.get("review_count") or 0)
+    rank = int(row.get("search_result_rank_used") or 0)
+    asin_esc = html.escape(str(row.get("asin") or "—"))
+    risk = str(row.get("risk_level") or estimate_risk_level(row))
+    rb = risk_badge_class(risk)
+    risk_esc = html.escape(risk)
+
+    bullets = row.get("bullets") or []
+    blist = bullets if isinstance(bullets, list) else []
+    why_li = "".join(f"<li>{html.escape(str(b)[:400])}</li>" for b in blist[:8])
+
+    hl_lines: list[str] = []
+    if fr:
+        hl_lines.extend(_fc_why_now_bullets(fr)[:5])
+        for t in (fr.get("derived_tags") or [])[:5]:
+            s = str(t).strip()
+            if s and s not in hl_lines:
+                hl_lines.append(s)
+    if not hl_lines and blist:
+        for b in blist[:5]:
+            s = str(b).strip()
+            if len(s) > 110:
+                s = s[:107] + "…"
+            if s:
+                hl_lines.append(s)
+    hi_li = "".join(f"<li>{html.escape(h)}</li>" for h in hl_lines[:8])
+
+    buyer_act = str(fr.get("buyer_action") or "").strip() if fr else ""
+
+    # Single-line / no leading-indent HTML — indented lines are rendered as Markdown code blocks.
+    _pair_parts: list[str] = ['<div class="dw-score-pair">']
+    if fr:
+        fs_disp = float(fr.get("future_opportunity_score") or 0)
+        _pair_parts.append(
+            f'<div class="dw-score-row dw-score-row--forecast"><span class="dw-sl">30-Day Forecast</span>'
+            f'<span class="dw-sv dw-sv-forecast">{fs_disp:.1f}</span></div>'
+        )
+    _pair_parts.append(
+        f'<div class="dw-score-row dw-score-row--current"><span class="dw-sl">Current Score</span>'
+        f'<span class="dw-sv dw-sv-current">{score:.1f}</span></div></div>'
+    )
+    score_pair_html = "".join(_pair_parts)
+
+    outlook_html = ""
+    if fr:
+        evs = fr.get("relevant_upcoming_events") or []
+        ev_line = ", ".join(evs) if evs else "—"
+        ev_line_e = html.escape(ev_line)
+        fs = float(fr.get("future_opportunity_score") or 0)
+        flab = html.escape(str(fr.get("forecast_label") or "—"))
+        conf = html.escape(str(fr.get("forecast_confidence") or "—"))
+        reasons = fr.get("future_reasons") or []
+        reason_txt = html.escape(reasons[0]) if reasons else "—"
+        badges = fr.get("event_badges") or []
+        bh = "".join(f'<span class="pill-tag">{html.escape(str(b))}</span>' for b in badges[:5])
+        outlook_html = f"""
+  <div class="dw-card">
+    <div class="dw-h">30-Day outlook</div>
+    <ul class="dw-ul">
+      <li><strong>30-Day Forecast</strong> {fs:.1f} · <strong>Label</strong> {flab} · <strong>Confidence</strong> {conf}</li>
+      <li><strong>Drivers</strong> {ev_line_e}</li>
+      <li>{reason_txt}</li>
+    </ul>
+    <div class="dw-tag-row">{bh}</div>
+  </div>
+"""
+    else:
+        outlook_html = """
+  <div class="dw-card">
+    <div class="dw-h">30-Day outlook</div>
+    <p class="dw-muted">No forecast data for this listing under current rules.</p>
+  </div>
+"""
+
+    why_block = ""
+    if why_li.strip():
+        why_block = f"""
+  <div class="dw-card">
+    <div class="dw-h">Why this product</div>
+    <ul class="dw-ul">{why_li}</ul>
+  </div>
+"""
+
+    buyer_block = ""
+    if buyer_act:
+        buyer_block = f"""
+  <div class="dw-card">
+    <div class="dw-h">Buyer action</div>
+    <div class="buyer-action-box">
+      <span class="buyer-action-icon" aria-hidden="true">✓</span>
+      <p class="buyer-action-text">{html.escape(buyer_act)}</p>
+    </div>
+  </div>
+"""
+
+    hi_block = ""
+    if hi_li.strip():
+        hi_block = f"""
+  <div class="dw-card">
+    <div class="dw-h">Highlights</div>
+    <ul class="dw-highlights">{hi_li}</ul>
+  </div>
+"""
+
+    shelf_s, ben_s, ing_s, region_s = _row_listing_facts(row)
+
+    def _listing_extra_row(label: str, text: str) -> str:
+        lab_e = html.escape(label)
+        if text.strip():
+            return (
+                f'<div class="extra-block"><div class="extra-label">{lab_e}</div>'
+                f'<p class="extra-body">{html.escape(text)}</p></div>'
+            )
+        return (
+            f'<div class="extra-block"><div class="extra-label">{lab_e}</div>'
+            f'<p class="extra-body muted">Not listed</p></div>'
+        )
+
+    listing_facts_html = f"""
+  <div class="dw-card">
+    <div class="dw-h">Shelf life, benefits, ingredients & origin</div>
+    <div class="detail-extras dw-listing-detail-extras">
+      {_listing_extra_row("Product shelf life", shelf_s)}
+      {_listing_extra_row("Product benefits", ben_s)}
+      {_listing_extra_row("Special ingredients", ing_s)}
+      {_listing_extra_row("Region of origin", region_s)}
+    </div>
+  </div>
+"""
+
+    st.markdown(
+        f"""
+<div class="detail-workspace">
+  <div class="dw-card dw-overview">
+    <div class="detail-title">{title}</div>
+    {score_pair_html}
+    <div class="detail-price">{price}</div>
+    <div class="detail-meta-row">
+      <span class="{rb}">{risk_esc}</span>
+      <span class="tag-pill">{q}</span>
+    </div>
+    <div class="detail-grid detail-grid--panel">
+      <div><span class="label">Rating</span><span class="val">{rating} ★</span></div>
+      <div><span class="label">Reviews</span><span class="val">{rev:,}</span></div>
+      <div><span class="label">Search rank</span><span class="val">#{rank}</span></div>
+    </div>
+    <div class="detail-asin">ASIN {asin_esc}</div>
+  </div>
+{listing_facts_html}
+{outlook_html}
+{why_block}
+{buyer_block}
+{hi_block}
+</div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    if url:
+        st.markdown(
+            f'<a class="ts-btn-primary ts-btn-block" href="{html.escape(url, quote=True)}" target="_blank" rel="noopener noreferrer">View on Amazon ↗</a>',
+            unsafe_allow_html=True,
+        )
+
+    _render_gpt_buyer_section(row)
+
+
+def render_detail_panel(
+    row: pd.Series,
+    forecast: dict | None = None,
+    *,
+    panel_mode: bool = False,
+) -> None:
+    if panel_mode:
+        _render_detail_workspace(row, forecast)
+        return
+
     title = html.escape(str(row.get("amazon_title") or "—"))
     q = html.escape(str(row.get("query") or "—"))
     price = html.escape(price_display(row))
@@ -1000,16 +2280,27 @@ def render_detail_panel(row: pd.Series) -> None:
     b_show = bullets[:3] if isinstance(bullets, list) else []
     li = "".join(f"<li>{html.escape(str(b)[:320])}</li>" for b in b_show)
 
-    shelf_raw = row.get("product_shelf_life")
-    ben_raw = row.get("product_benefits")
-    shelf_s = _clean_text_field(shelf_raw) if shelf_raw is not None else ""
-    ben_s = _clean_text_field(ben_raw) if ben_raw is not None else ""
-    shelf_html = html.escape(shelf_s) if shelf_s else '<span class="extra-body muted">Not listed</span>'
-    ben_html = html.escape(ben_s) if ben_s else '<span class="extra-body muted">Not listed</span>'
-    if shelf_s:
-        shelf_html = f'<p class="extra-body">{shelf_html}</p>'
-    if ben_s:
-        ben_html = f'<p class="extra-body">{ben_html}</p>'
+    shelf_s, ben_s, ing_s, region_s = _row_listing_facts(row)
+    shelf_html = (
+        f'<p class="extra-body">{html.escape(shelf_s)}</p>'
+        if shelf_s.strip()
+        else '<p class="extra-body muted">Not listed</p>'
+    )
+    ben_html = (
+        f'<p class="extra-body">{html.escape(ben_s)}</p>'
+        if ben_s.strip()
+        else '<p class="extra-body muted">Not listed</p>'
+    )
+    ing_html = (
+        f'<p class="extra-body">{html.escape(ing_s)}</p>'
+        if ing_s.strip()
+        else '<p class="extra-body muted">Not listed</p>'
+    )
+    region_html = (
+        f'<p class="extra-body">{html.escape(region_s)}</p>'
+        if region_s.strip()
+        else '<p class="extra-body muted">Not listed</p>'
+    )
 
     st.markdown(
         f"""
@@ -1018,7 +2309,7 @@ def render_detail_panel(row: pd.Series) -> None:
   <div class="detail-meta-row">
     <span class="{rb}">{risk_esc}</span>
     <span class="tag-pill">{q}</span>
-    <span class="score-pill-lg">Fit score {score:.1f}</span>
+    <span class="score-pill-lg">Current Score {score:.1f}</span>
   </div>
   <div class="detail-title">{title}</div>
   <div class="detail-price">{price}</div>
@@ -1029,12 +2320,20 @@ def render_detail_panel(row: pd.Series) -> None:
   </div>
   <div class="detail-extras">
     <div class="extra-block">
-      <div class="extra-label">Shelf life</div>
+      <div class="extra-label">Product shelf life</div>
       {shelf_html}
     </div>
     <div class="extra-block">
-      <div class="extra-label">Listing benefits</div>
+      <div class="extra-label">Product benefits</div>
       {ben_html}
+    </div>
+    <div class="extra-block">
+      <div class="extra-label">Special ingredients</div>
+      {ing_html}
+    </div>
+    <div class="extra-block">
+      <div class="extra-label">Region of origin</div>
+      {region_html}
     </div>
   </div>
   <div style="font-size:0.62rem;color:#737373;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.35rem;margin-top:0.85rem;font-weight:600">Highlights</div>
@@ -1046,17 +2345,53 @@ def render_detail_panel(row: pd.Series) -> None:
     )
 
     if url:
-        st.link_button("View listing on Amazon", url, use_container_width=True, type="primary")
+        st.markdown(
+            f'<a class="ts-btn-primary ts-btn-block" href="{html.escape(url, quote=True)}" target="_blank" rel="noopener noreferrer">View on Amazon ↗</a>',
+            unsafe_allow_html=True,
+        )
+
+    _render_gpt_buyer_section(row)
+
+    if forecast:
+        evs = forecast.get("relevant_upcoming_events") or []
+        ev_line = ", ".join(evs) if evs else "—"
+        ev_line_e = html.escape(ev_line)
+        fs = float(forecast.get("future_opportunity_score") or 0)
+        flab = html.escape(str(forecast.get("forecast_label") or "—"))
+        conf = html.escape(str(forecast.get("forecast_confidence") or "—"))
+        reasons = forecast.get("future_reasons") or []
+        reason_txt = reasons[0] if reasons else ""
+        act = html.escape(str(forecast.get("buyer_action") or ""))
+        badges = forecast.get("event_badges") or []
+        bh = "".join(f'<span class="pill-tag">{html.escape(str(b))}</span>' for b in badges[:5])
+        st.markdown(
+            f"""
+<div class="outlook-box">
+  <div class="outlook-k">30-Day outlook</div>
+  <div class="outlook-row"><strong>30-Day Forecast:</strong> {fs:.1f} · <strong>Label:</strong> {flab} · <strong>Confidence:</strong> {conf}</div>
+  <div class="outlook-row"><strong>Upcoming drivers:</strong> {ev_line_e}</div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;margin:0.5rem 0">{bh}</div>
+  <div class="outlook-row">{html.escape(reason_txt)}</div>
+  <div class="outlook-row"><strong>Suggested action:</strong> {act}</div>
+</div>
+            """,
+            unsafe_allow_html=True,
+        )
 
 
-def render_recommended_block(top5: pd.DataFrame, fp: str) -> None:
-    """Master-detail: ranked queue (left) + detail (right)."""
+def render_recommended_block(
+    top5: pd.DataFrame,
+    fdf: pd.DataFrame,
+    fp_key: str,
+    forecast_by_asin: dict[str, dict] | None,
+) -> None:
+    """Compact priority queue — Details opens the right panel."""
     st.markdown(
         """
 <div class="section-head">
   <p class="section-head-k">Workflow</p>
   <p class="section-head-t">Priority Buying Queue</p>
-  <p class="section-head-s">Top five SKUs for your current filters and <strong>sort order</strong> (see sidebar). Select a row to inspect listing detail. Open <strong>Buyer Decision Assistant</strong> from the sidebar for GPT screening.</p>
+  <p class="section-head-s">Top five SKUs for your filters and <strong>sort order</strong>. Use <strong>Details</strong> to inspect on the right.</p>
 </div>
         """,
         unsafe_allow_html=True,
@@ -1066,27 +2401,82 @@ def render_recommended_block(top5: pd.DataFrame, fp: str) -> None:
         st.caption("No products match the current filters.")
         return
 
-    asins = top5["asin"].tolist()
-    key = f"rec_radio_{fp}"
+    fmap = forecast_by_asin or {}
+    sel = st.session_state.get(SELECTED_PRODUCT_KEY)
+    detail_open = bool(st.session_state.get(DETAIL_OPEN_KEY))
 
-    c_left, c_right = st.columns([0.38, 0.62], gap="large")
+    def _pick_pq(idx_val: int) -> None:
+        r = top5.iloc[idx_val]
+        resolved = fdf.iloc[_fdf_iloc_for_row(fdf, r)]
+        st.session_state[SELECTED_PRODUCT_KEY] = row_to_selected_product(resolved)
+        st.session_state[DETAIL_OPEN_KEY] = True
 
-    with c_left:
-        st.caption("Ranked candidates")
-        pick = st.radio(
-            "recommended_skus",
-            options=asins,
-            format_func=lambda a: format_rec_radio_label(a, top5),
-            label_visibility="collapsed",
-            key=key,
+    for i in range(len(top5)):
+        row = top5.iloc[i]
+        aid = str(row.get("asin") or "")
+        fr = fmap.get(aid) or {}
+        title_raw = str(row.get("amazon_title") or "—")
+        title = html.escape(title_raw[:82] + ("…" if len(title_raw) > 82 else ""))
+        sc = float(row.get("opportunity_score") or 0)
+        dt = fr.get("derived_tags") if fr else None
+        dt_list = dt if isinstance(dt, list) else []
+        tag_bits = "".join(
+            f'<span class="pill-tag">{html.escape(str(t))}</span>' for t in dt_list[:2]
         )
+        summary = html.escape(_one_line_summary(row, fr))
+        if len(summary) > 118:
+            summary = summary[:115] + "…"
+        cur = fdf.iloc[_fdf_iloc_for_row(fdf, row)]
+        is_sel = detail_open and isinstance(sel, dict) and _same_listing_row(cur, sel)
+        sel_cls = " ts-scan-inner--selected" if is_sel else ""
+        score_big = html.escape(f"{sc:.1f}")
+        rank_n = i + 1
+        rank_label = html.escape(f"#{rank_n}")
+        risk_tier = str(cur.get("risk_level") or "").strip() or estimate_risk_level(cur)
+        rb = risk_badge_class(risk_tier)
+        risk_esc = html.escape(risk_tier)
+        risk_badge_html = f'<span class="{rb}">{risk_esc}</span>'
 
-    with c_right:
-        sel = top5[top5["asin"] == pick].iloc[0]
-        render_detail_panel(sel)
+        card_html = f"""
+<div class="ts-scan-inner ts-scan-inner--queue{sel_cls}">
+  <div class="ts-scan-with-rank">
+    <span class="ts-scan-rank" aria-label="Rank {rank_n}">{rank_label}</span>
+    <div class="ts-scan-with-rank-body">
+      <div class="ts-scan-title-row">
+        <div class="ts-scan-title-full">{title}</div>
+        {risk_badge_html}
+      </div>
+      <div class="ts-scan-score-block">
+        <span class="ts-scan-lbl">Current Score</span>
+        <span class="ts-scan-val ts-scan-val--current">{score_big}</span>
+      </div>
+      <div class="ts-scan-tags">{tag_bits}</div>
+      <p class="ts-scan-desc">{summary}</p>
+    </div>
+  </div>
+</div>
+"""
+        with _scan_card_container():
+            st.markdown(card_html, unsafe_allow_html=True)
+            _pad, _btn = st.columns([3, 1])
+            with _btn:
+                st.button(
+                    "Details",
+                    key=f"pq_det_{fp_key}_{i}",
+                    on_click=_pick_pq,
+                    args=(i,),
+                    type="primary" if is_sel else "secondary",
+                    use_container_width=True,
+                )
 
 
-def render_product_cards(df: pd.DataFrame, sort_key: str) -> None:
+def render_product_cards(
+    df: pd.DataFrame,
+    sort_key: str,
+    forecast_by_asin: dict[str, dict] | None,
+    fp_key: str,
+) -> None:
+    """Compact All results — full data only in the right panel after Details."""
     label = SORT_LABELS.get(sort_key, sort_key)
     n = len(df)
     st.markdown('<p class="section-label">All results</p>', unsafe_allow_html=True)
@@ -1098,52 +2488,58 @@ def render_product_cards(df: pd.DataFrame, sort_key: str) -> None:
         st.caption("Adjust filters to see products.")
         return
 
-    for _, row in df.iterrows():
-        bullets = row.get("bullets") or []
-        b_show = bullets[:1] if isinstance(bullets, list) else []
-        li = "".join(f"<li>{html.escape(str(b)[:280])}</li>" for b in b_show)
-        pshow = html.escape(price_display(row))
-        title = html.escape(str(row.get("amazon_title") or "—"))
+    fmap = forecast_by_asin or {}
+    sel = st.session_state.get(SELECTED_PRODUCT_KEY)
+    detail_open = bool(st.session_state.get(DETAIL_OPEN_KEY))
+
+    def _select_row(idx: int) -> None:
+        st.session_state[SELECTED_PRODUCT_KEY] = row_to_selected_product(df.iloc[int(idx)])
+        st.session_state[DETAIL_OPEN_KEY] = True
+
+    for row_idx, (_, row) in enumerate(df.iterrows()):
+        aid = str(row.get("asin") or "")
+        fr = fmap.get(aid) or {}
+        title_plain = str(row.get("amazon_title") or "—")
+        title = html.escape(title_plain[:82] + ("…" if len(title_plain) > 82 else ""))
         q = html.escape(str(row.get("query") or "—"))
-        url = str(row.get("url") or "")
-        asin = html.escape(str(row.get("asin") or "—"))
-        rating = row.get("rating", "—")
-        rev = int(row.get("review_count") or 0)
         sc = float(row.get("opportunity_score") or 0)
-        risk = str(row.get("risk_level") or estimate_risk_level(row))
-        rb = risk_badge_class(risk)
-        risk_e = html.escape(risk)
-
-        link_html = (
-            f'<a class="amo-link" href="{html.escape(url)}" target="_blank" rel="noopener noreferrer">Amazon</a>'
-            if url
-            else ""
+        dt = fr.get("derived_tags") if fr else None
+        dt_list = dt if isinstance(dt, list) else []
+        tag_bits = "".join(
+            f'<span class="pill-tag">{html.escape(str(t))}</span>' for t in dt_list[:3]
         )
-        bullets_html = f"<ul class='pcard-bullets'>{li}</ul>" if li else ""
+        query_pill = f'<span class="pill-tag pill-tag--query">{q}</span>'
+        summary = html.escape(_one_line_summary(row, fr if fr else None))
+        if len(summary) > 118:
+            summary = summary[:115] + "…"
 
-        st.markdown(
-            f"""
-<div class="pcard">
-  <div class="pcard-top">
-    <div>
-      <span class="tag-query">{q}</span>
-      <div class="ptitle">{title}</div>
-    </div>
-    <span class="{rb}">{risk_e}</span>
+        is_sel = detail_open and isinstance(sel, dict) and _same_listing_row(row, sel)
+        sel_cls = " ts-scan-inner--selected" if is_sel else ""
+        score_big = html.escape(f"{sc:.1f}")
+
+        card_html = f"""
+<div class="ts-scan-inner ts-scan-inner--all{sel_cls}">
+  <div class="ts-scan-title-full">{title}</div>
+  <div class="ts-scan-score-block">
+    <span class="ts-scan-lbl">Current Score</span>
+    <span class="ts-scan-val ts-scan-val--current">{score_big}</span>
   </div>
-  <div class="pcard-stats">
-    <span class="pcard-price">{pshow}</span>
-    <span class="pcard-rating">{rating} ★</span>
-    <span>{rev:,} reviews</span>
-  </div>
-  <div class="pcard-opp">Fit score {sc:.1f}</div>
-  <div class="muted-asin">ASIN {asin}</div>
-  {bullets_html}
-  {link_html}
+  <div class="ts-scan-tags">{query_pill}{tag_bits}</div>
+  <p class="ts-scan-desc">{summary}</p>
 </div>
-            """,
-            unsafe_allow_html=True,
-        )
+"""
+        with _scan_card_container():
+            st.markdown(card_html, unsafe_allow_html=True)
+            _pad, _btn = st.columns([3, 1])
+            with _btn:
+                st.button(
+                    "Details",
+                    key=f"ar_det_{fp_key}_{row_idx}",
+                    on_click=_select_row,
+                    args=(row_idx,),
+                    type="primary" if is_sel else "secondary",
+                    use_container_width=True,
+                )
 
 
 def main():
@@ -1153,6 +2549,9 @@ def main():
         layout="wide",
         initial_sidebar_state="expanded",
     )
+
+    if DETAIL_OPEN_KEY not in st.session_state:
+        st.session_state[DETAIL_OPEN_KEY] = False
 
     df_all = load_products()
     render_header()
@@ -1165,13 +2564,18 @@ def main():
     p_max_default = float(price_valid.max()) if len(price_valid) else 500.0
 
     slider_max = max(500.0, p_max_default)
-    sb = render_explore_sidebar(
-        df_all,
-        BENEFIT_CATEGORIES,
-        p_min_default,
-        p_max_default,
-        slider_max,
-    )
+
+    col_filters, col_center = st.columns([1.0, 4.0], gap="large")
+
+    with col_filters:
+        sb = render_explore_sidebar(
+            df_all,
+            BENEFIT_CATEGORIES,
+            p_min_default,
+            p_max_default,
+            slider_max,
+        )
+
     search = sb["search"]
     q_pick = sb["q_pick"]
     benefit_pick = sb["benefit_pick"]
@@ -1200,15 +2604,31 @@ def main():
         pr_max,
         len(filtered),
     )
+    fp_key = hashlib.sha256(fp.encode()).hexdigest()[:16]
 
-    render_metrics(sorted_df)
-    st.markdown('<hr class="sep"/>', unsafe_allow_html=True)
+    fdf, upcoming_fc, forecast_by_asin = attach_forecast_to_dataframe(sorted_df)
+    _sync_detail_selection(fdf)
+    detail_open = bool(st.session_state.get(DETAIL_OPEN_KEY))
 
-    top5 = top_recommendations(sorted_df)
-    render_recommended_block(top5, fp)
+    top_fc = top_forecast_products(fdf, 5)
+    top5 = top_recommendations(fdf)
 
-    st.markdown('<hr class="sep"/>', unsafe_allow_html=True)
-    render_product_cards(sorted_df, sort_key)
+    with col_center:
+        render_metrics(sorted_df)
+        render_forecast_intro(upcoming_fc)
+        render_forecast_cards_only(top_fc, fdf, forecast_by_asin, fp_key)
+        st.markdown('<hr class="sep"/>', unsafe_allow_html=True)
+        render_recommended_block(top5, fdf, fp_key, forecast_by_asin)
+        st.markdown('<hr class="sep"/>', unsafe_allow_html=True)
+        render_product_cards(fdf, sort_key, forecast_by_asin, fp_key)
+
+    if detail_open:
+        with st.container():
+            st.markdown(
+                '<span class="ts-inspect-drawer-marker" aria-hidden="true"></span>',
+                unsafe_allow_html=True,
+            )
+            render_persistent_detail_panel(fdf, forecast_by_asin)
 
 
 if __name__ == "__main__":

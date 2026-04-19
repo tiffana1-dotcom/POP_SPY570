@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "notes": "Keyword and phrase hints → buyer-useful tags. Extend lists as your assortment grows.",
+  "keyword_to_tags": [
+    { "keywords": ["rose", "jasmine", "floral", "hibiscus", "lavender", "peony"], "tags": ["floral"] },
+    { "keywords": ["gift", "gift set", "giftable", "elegant", "luxury", "premium box"], "tags": ["giftable", "premium"] },
+    { "keywords": ["calm", "relax", "sleep", "stress", "anxiety", "unwind"], "tags": ["wellness", "calming"] },
+    { "keywords": ["immune", "immunity", "vitamin", "zinc", "elderberry"], "tags": ["immunity", "wellness"] },
+    { "keywords": ["ginger", "chai", "cinnamon", "spiced", "turmeric", "cardamom"], "tags": ["warming", "spiced"] },
+    { "keywords": ["iced", "cold brew", "refreshing", "lemon", "citrus", "summer", "hydration"], "tags": ["refreshing", "summer-drink"] },
+    { "keywords": ["green tea", "matcha", "sencha"], "tags": ["green", "tea"] },
+    { "keywords": ["herbal", "tisane", "caffeine free", "decaf"], "tags": ["herbal"] },
+    { "keywords": ["energy", "focus", "caffeine", "black tea", "maté", "yerba"], "tags": ["caffeinated", "energy"] },
+    { "keywords": ["kids", "family", "school", "lunchbox"], "tags": ["family", "school"] },
+    { "keywords": ["pumpkin", "autumn", "fall", "maple"], "tags": ["cozy", "fall-fit"] },
+    { "keywords": ["instant", "packets", "stick", "on the go"], "tags": ["portable", "instant"] },
+    { "keywords": ["organic", "usda", "non-gmo"], "tags": ["premium"] },
+    { "keywords": ["supplement", "capsule", "gummy", "soft chew"], "tags": ["supplement"] },
+    { "keywords": ["otc", "drug facts", "medicine"], "tags": ["otc-like"] }
+  ],
+  "query_to_category": [
+    { "patterns": ["tea", "chai", "tisane", "matcha", "oolong"], "category": "tea" },
+    { "patterns": ["herbal", "rooibos", "peppermint tea"], "category": "herbal tea" },
+    { "patterns": ["green tea", "matcha"], "category": "green tea" },
+    { "patterns": ["rose", "jasmine", "floral"], "category": "floral tea" },
+    { "patterns": ["supplement", "vitamin", "gummy"], "category": "supplement" },
+    { "patterns": ["drink mix", "beverage", "hydration"], "category": "wellness drink" },
+    { "patterns": ["gift", "sampler", "variety pack"], "category": "gift set" },
+    { "patterns": ["instant", "powder", "packets"], "category": "instant beverage" }
+  ],
+  "title_category_hints": [
+    { "patterns": ["herbal tea", "tisane", "caffeine free"], "category": "herbal tea" },
+    { "patterns": ["green tea", "matcha"], "category": "green tea" },
+    { "patterns": ["gift set", "sampler", "variety"], "category": "gift set" },
+    { "patterns": ["supplement", "gummy", "capsule"], "category": "supplement" }
+  ]
+}

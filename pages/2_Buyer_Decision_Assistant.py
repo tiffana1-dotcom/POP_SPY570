@@ -41,13 +41,14 @@ def main() -> None:
     p_max_default = float(price_valid.max()) if len(price_valid) else 500.0
     slider_max = max(500.0, p_max_default)
 
-    sb = render_explore_sidebar(
-        df_all,
-        BENEFIT_CATEGORIES,
-        p_min_default,
-        p_max_default,
-        slider_max,
-    )
+    with st.sidebar:
+        sb = render_explore_sidebar(
+            df_all,
+            BENEFIT_CATEGORIES,
+            p_min_default,
+            p_max_default,
+            slider_max,
+        )
 
     filtered = apply_filters(
         df_all,

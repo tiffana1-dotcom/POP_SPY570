@@ -250,6 +250,11 @@ def format_product_context_for_analysis(row: pd.Series) -> tuple[str, str]:
     ing = row.get("Special Ingredients")
     if ing is not None and str(ing).strip():
         lines.append(f"Special ingredients (if listed): {ing}")
+    reg = str(row.get("region_of_origin") or "").strip()
+    if not reg and "Region of Origin" in row.index:
+        reg = str(row.get("Region of Origin") or "").strip()
+    if reg:
+        lines.append(f"Region of origin: {reg}")
     bl = _bullets_lines(row)
     if bl:
         lines.append("Bullets:")

@@ -35,6 +35,54 @@ def _copilot_conf_badge_class(confidence: str) -> str:
     }.get(confidence, "copilot-badge conf-med")
 
 
+def render_copilot_gpt_result(
+    result: dict,
+    *,
+    show_heading: bool = True,
+    use_chat_message: bool = True,
+) -> None:
+    """Structured GPT buyer screening output (Buyer Assistant page + TrendScout detail drawer)."""
+    if not isinstance(result, dict) or not result:
+        return
+    if show_heading:
+        st.markdown("##### Assistant output")
+    rec = result.get("recommendation", "")
+    conf = result.get("confidence", "")
+    rb = _copilot_rec_badge_class(rec)
+    cb = _copilot_conf_badge_class(conf)
+    summary = html.escape(str(result.get("summary") or ""))
+
+    def ul(items: list) -> str:
+        if not items:
+            return "<p class='copilot-summary' style='color:var(--text-muted)'>—</p>"
+        li = "".join(f"<li>{html.escape(str(x))}</li>" for x in items)
+        return f"<ul class='copilot-list'>{li}</ul>"
+
+    inner = f"""
+<div class="copilot-result-card" style="margin-top:0">
+  <div class="copilot-badge-row">
+    <span class="{rb}">{html.escape(rec)}</span>
+    <span class="{cb}">Confidence: {html.escape(conf)}</span>
+  </div>
+  <div class="copilot-section-title">Summary</div>
+  <p class="copilot-summary">{summary}</p>
+  <div class="copilot-section-title">Potential benefits</div>
+  {ul(result.get("benefits") or [])}
+  <div class="copilot-section-title">Potential risks / concerns</div>
+  {ul(result.get("risks") or [])}
+  <div class="copilot-section-title">Regulatory / claim flags</div>
+  {ul(result.get("regulatory_flags") or [])}
+  <div class="copilot-section-title">Manual checks</div>
+  {ul(result.get("manual_checks") or [])}
+</div>
+"""
+    if use_chat_message:
+        with st.chat_message("assistant"):
+            st.markdown(inner, unsafe_allow_html=True)
+    else:
+        st.markdown(inner, unsafe_allow_html=True)
+
+
 def render_buyer_copilot_section(
     df_all: pd.DataFrame,
     top5: pd.DataFrame,
@@ -177,38 +225,4 @@ def render_buyer_copilot_section(
 
     result = st.session_state.get(k_result)
     if isinstance(result, dict) and result:
-        st.markdown("##### Assistant output")
-        rec = result.get("recommendation", "")
-        conf = result.get("confidence", "")
-        rb = _copilot_rec_badge_class(rec)
-        cb = _copilot_conf_badge_class(conf)
-        summary = html.escape(str(result.get("summary") or ""))
-
-        def ul(items: list) -> str:
-            if not items:
-                return "<p class='copilot-summary' style='color:var(--text-muted)'>—</p>"
-            li = "".join(f"<li>{html.escape(str(x))}</li>" for x in items)
-            return f"<ul class='copilot-list'>{li}</ul>"
-
-        with st.chat_message("assistant"):
-            st.markdown(
-                f"""
-<div class="copilot-result-card" style="margin-top:0">
-  <div class="copilot-badge-row">
-    <span class="{rb}">{html.escape(rec)}</span>
-    <span class="{cb}">Confidence: {html.escape(conf)}</span>
-  </div>
-  <div class="copilot-section-title">Summary</div>
-  <p class="copilot-summary">{summary}</p>
-  <div class="copilot-section-title">Potential benefits</div>
-  {ul(result.get("benefits") or [])}
-  <div class="copilot-section-title">Potential risks / concerns</div>
-  {ul(result.get("risks") or [])}
-  <div class="copilot-section-title">Regulatory / claim flags</div>
-  {ul(result.get("regulatory_flags") or [])}
-  <div class="copilot-section-title">Manual checks</div>
-  {ul(result.get("manual_checks") or [])}
-</div>
-                """,
-                unsafe_allow_html=True,
-            )
+        render_copilot_gpt_result(result, show_heading=True, use_chat_message=True)
