@@ -1,7 +1,7 @@
 """
-TrendScout Live — Streamlit buyer dashboard.
-Loads product rows from 51-100.json (same folder as this file).
-Run: streamlit run TrendScout.py
+SipScope Live — Streamlit buyer dashboard.
+Loads product rows from FINAL.json (same folder as this file).
+Run: streamlit run SipScope.py
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ from buyer_copilot import analyze_product, format_product_context_for_analysis
 from copilot_page import render_copilot_gpt_result
 from forecast_engine import attach_forecast_to_dataframe, top_forecast_products
 from tariff_filter import flag_trade_risk
-from trendscout_sidebar import SORT_LABELS, render_explore_sidebar
+from sipscope_sidebar import SORT_LABELS, render_explore_sidebar
 
 # Global master–detail selection (Forecast, Priority queue, All results share this).
 SELECTED_PRODUCT_KEY = "selected_product"
@@ -178,7 +178,7 @@ def risk_badge_class(tier: str) -> str:
 # Paths & data loading
 # ---------------------------------------------------------------------------
 
-DATA_FILE = Path(__file__).resolve().parent / "51-100.json"
+DATA_FILE = Path(__file__).resolve().parent / "FINAL.json"
 
 # Product benefits themes → keyword hints (matched on `product_benefits` text, case-insensitive).
 # If multiple categories are selected, a row matches if it satisfies any selected theme (OR).

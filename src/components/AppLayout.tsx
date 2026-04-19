@@ -55,8 +55,8 @@ export function AppLayout() {
       </main>
       <footer className="border-t border-slate-200/80 bg-white">
         <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 text-xs text-slate-500">
-          TrendScout Live surfaces illustrative Amazon-inspired signals for buyer
-          workflows. Not affiliated with Amazon.
+          TrendScout Live surfaces illustrative Amazon-inspired signals for
+          buyer workflows. Not affiliated with Amazon.
         </div>
       </footer>
     </div>

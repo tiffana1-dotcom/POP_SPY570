@@ -1,4 +1,4 @@
-"""Shared Explore sidebar for TrendScout dashboard + Buyer Assistant (same widget keys = shared state)."""
+"""Shared Explore sidebar for SipScope dashboard + Buyer Assistant (same widget keys = shared state)."""
 
 from __future__ import annotations
 

@@ -36,7 +36,11 @@ interface TrendFeedContextValue {
 const TrendFeedContext = createContext<TrendFeedContextValue | null>(null);
 
 function explainFeedError(message: string): string {
-  if (/failed to fetch|fetch failed|networkerror|load failed|network request failed/i.test(message)) {
+  if (
+    /failed to fetch|fetch failed|networkerror|load failed|network request failed/i.test(
+      message,
+    )
+  ) {
     return [
       "Could not reach the API. Run `npm run dev` and wait for both:",
       "TrendScout API listening on http://127.0.0.1:8787",
@@ -56,8 +60,12 @@ function isTransientNetworkError(e: unknown): boolean {
 
 export function TrendFeedProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<EnrichedProduct[]>([]);
-  const [shelfCategories, setShelfCategories] = useState<string[]>([...SHELF_CATEGORIES]);
-  const [discoveryMeta, setDiscoveryMeta] = useState<DiscoveryMeta | null>(null);
+  const [shelfCategories, setShelfCategories] = useState<string[]>([
+    ...SHELF_CATEGORIES,
+  ]);
+  const [discoveryMeta, setDiscoveryMeta] = useState<DiscoveryMeta | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -66,7 +74,11 @@ export function TrendFeedProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       /** Same-origin `/api` — Vite dev server proxies to Express on 8787. Set VITE_API_BASE only for a custom API URL. */
-      const base = (import.meta.env.VITE_API_BASE as string | undefined)?.replace(/\/$/, "") ?? "";
+      const base =
+        (import.meta.env.VITE_API_BASE as string | undefined)?.replace(
+          /\/$/,
+          "",
+        ) ?? "";
       const url = `${base}/api/feed`;
 
       let res: Response;
@@ -108,13 +120,17 @@ export function TrendFeedProvider({ children }: { children: ReactNode }) {
       }
       setProducts(data.products ?? []);
       setDiscoveryMeta(data.discoveryMeta ?? null);
-      if (Array.isArray(data.shelfCategories) && data.shelfCategories.length > 0) {
+      if (
+        Array.isArray(data.shelfCategories) &&
+        data.shelfCategories.length > 0
+      ) {
         setShelfCategories(data.shelfCategories);
       } else {
         setShelfCategories([...SHELF_CATEGORIES]);
       }
     } catch (e) {
-      const raw = e instanceof Error ? e.message : "Failed to load product feed";
+      const raw =
+        e instanceof Error ? e.message : "Failed to load product feed";
       setError(explainFeedError(raw));
       setProducts([]);
       setDiscoveryMeta(null);
