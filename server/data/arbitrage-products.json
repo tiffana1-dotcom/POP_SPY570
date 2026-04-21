@@ -1,0 +1,12 @@
+[
+  { "displayName": "mala hotpot noodles", "amazonQuery": "mala hotpot instant noodles", "category": "Grocery" },
+  { "displayName": "WeiLong latiao snack", "amazonQuery": "WeiLong latiao spicy gluten snack", "category": "Snacks" },
+  { "displayName": "brown sugar ginger tea", "amazonQuery": "brown sugar ginger tea instant granules", "category": "Beverage" },
+  { "displayName": "tremella snow fungus powder", "amazonQuery": "tremella snow fungus powder supplement", "category": "Grocery" },
+  { "displayName": "salted egg fish skin crisps", "amazonQuery": "salted egg fish skin chips Irvins", "category": "Snacks" },
+  { "displayName": "collagen jelly stick drink", "amazonQuery": "collagen jelly stick drink beauty", "category": "Beverage" },
+  { "displayName": "sesame paste cold noodles", "amazonQuery": "sesame paste dry noodles instant", "category": "Grocery" },
+  { "displayName": "centella asiatica toner", "amazonQuery": "centella asiatica toner Korean skincare", "category": "Beauty" },
+  { "displayName": "chrysanthemum wolfberry tea", "amazonQuery": "chrysanthemum wolfberry tea bags", "category": "Beverage" },
+  { "displayName": "astragalus root slices", "amazonQuery": "astragalus root slices huang qi", "category": "Grocery" }
+]

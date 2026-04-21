@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "notes": "Rule-based calendar signals for wholesale/retail planning. Dates are US-centric unless noted; tune windows per market.",
+  "events": [
+    {
+      "id": "winter",
+      "name": "Winter",
+      "type": "season",
+      "window_logic": { "months": [12, 1, 2] },
+      "window_days_before": 21,
+      "relevant_tags": ["cozy", "warming", "cold-weather", "herbal", "caffeinated"],
+      "boosted_categories": ["tea", "herbal tea", "instant beverage"],
+      "explanation_template": "Winter assortments often lean into {tags} and comfort-positioned SKUs.",
+      "badge_label": "Winter / Cozy Fit"
+    },
+    {
+      "id": "spring",
+      "name": "Spring",
+      "type": "season",
+      "window_logic": { "months": [3, 4, 5] },
+      "window_days_before": 21,
+      "relevant_tags": ["floral", "herbal", "spring-fit", "refreshing", "wellness"],
+      "boosted_categories": ["tea", "herbal tea", "green tea", "floral tea"],
+      "explanation_template": "Spring resets often reward {tags} and lighter tea profiles.",
+      "badge_label": "Spring Fit"
+    },
+    {
+      "id": "summer",
+      "name": "Summer",
+      "type": "season",
+      "window_logic": { "months": [6, 7, 8] },
+      "window_days_before": 21,
+      "relevant_tags": ["refreshing", "summer-drink", "iced", "hydration", "citrus"],
+      "boosted_categories": ["tea", "wellness drink", "instant beverage"],
+      "explanation_template": "Summer demand tends to favor {tags} and cold-serve friendly listings.",
+      "badge_label": "Summer Refreshment Fit"
+    },
+    {
+      "id": "fall",
+      "name": "Fall",
+      "type": "season",
+      "window_logic": { "months": [9, 10, 11] },
+      "window_days_before": 21,
+      "relevant_tags": ["warming", "spiced", "cozy", "pumpkin", "chai"],
+      "boosted_categories": ["tea", "herbal tea", "chai"],
+      "explanation_template": "Fall transitions often lift {tags} and spiced or comfort-forward items.",
+      "badge_label": "Fall Wellness Fit"
+    },
+    {
+      "id": "mothers_day",
+      "name": "Mother's Day",
+      "type": "holiday",
+      "window_logic": { "holiday": "second_sunday_may" },
+      "window_days_before": 28,
+      "relevant_tags": ["giftable", "premium", "floral", "wellness", "self-care", "family"],
+      "boosted_categories": ["tea", "gift set", "herbal tea", "floral tea"],
+      "explanation_template": "Gifting windows can lift {tags} SKUs with clear gift narratives.",
+      "badge_label": "Mother's Day Potential"
+    },
+    {
+      "id": "fathers_day",
+      "name": "Father's Day",
+      "type": "holiday",
+      "window_logic": { "holiday": "third_sunday_june" },
+      "window_days_before": 21,
+      "relevant_tags": ["giftable", "premium", "caffeinated", "bold"],
+      "boosted_categories": ["tea", "gift set", "supplement"],
+      "explanation_template": "Gift-driven demand may support {tags} items with strong ratings.",
+      "badge_label": "Father's Day Potential"
+    },
+    {
+      "id": "back_to_school",
+      "name": "Back to School",
+      "type": "holiday",
+      "window_logic": { "month_day_range": { "start_month": 8, "start_day": 1, "end_month": 9, "end_day": 15 } },
+      "window_days_before": 21,
+      "relevant_tags": ["school", "family", "portable", "energy", "focus"],
+      "boosted_categories": ["instant beverage", "tea", "supplement"],
+      "explanation_template": "Routine and household stock-up periods can favor {tags} and grab-and-go formats.",
+      "badge_label": "Back to School Signal"
+    },
+    {
+      "id": "halloween",
+      "name": "Halloween",
+      "type": "holiday",
+      "window_logic": { "month_day": { "month": 10, "day": 31 } },
+      "window_days_before": 21,
+      "relevant_tags": ["festive", "treat", "fun", "family"],
+      "boosted_categories": ["tea", "instant beverage", "gift set"],
+      "explanation_template": "Seasonal merchandising may add lift for {tags} with festive angles.",
+      "badge_label": "Halloween / Festive"
+    },
+    {
+      "id": "thanksgiving",
+      "name": "Thanksgiving",
+      "type": "holiday",
+      "window_logic": { "holiday": "fourth_thursday_november" },
+      "window_days_before": 21,
+      "relevant_tags": ["family", "gathering", "warming", "digestive", "herbal"],
+      "boosted_categories": ["tea", "herbal tea", "wellness drink"],
+      "explanation_template": "Entertaining and comfort occasions can align with {tags} positioning.",
+      "badge_label": "Thanksgiving / Gathering"
+    },
+    {
+      "id": "holiday_christmas",
+      "name": "Holiday / Christmas",
+      "type": "holiday",
+      "window_logic": { "month_day": { "month": 12, "day": 25 } },
+      "window_days_before": 45,
+      "relevant_tags": ["giftable", "premium", "festive", "family", "cozy"],
+      "boosted_categories": ["gift set", "tea", "herbal tea", "supplement"],
+      "explanation_template": "Holiday sets often reward {tags} with clear giftability and premium cues.",
+      "badge_label": "Holiday Gifting Candidate"
+    },
+    {
+      "id": "lunar_new_year",
+      "name": "Lunar New Year",
+      "type": "holiday",
+      "window_logic": { "month_day_range": { "start_month": 1, "start_day": 15, "end_month": 2, "end_day": 20 } },
+      "window_days_before": 21,
+      "relevant_tags": ["giftable", "premium", "family", "festive", "tea"],
+      "boosted_categories": ["tea", "gift set", "instant beverage"],
+      "explanation_template": "Cultural gifting peaks may favor {tags} SKUs with strong social proof.",
+      "badge_label": "Lunar New Year Signal"
+    }
+  ]
+}

@@ -4,8 +4,7 @@ import pandas as pd
 from pytrends.request import TrendReq
 from tariff_filter import flag_trade_risk
 
-RAINFOREST_KEY = "your_rainforest_api_key"
-WALMART_KEY    = "your_walmart_consumer_id"
+RAINFOREST_KEY="55EAC50497A14198BBEB1DAC3C614658"
 
 # ── 1. GOOGLE TRENDS ──────────────────────────────────────────────
 def get_trend_scores(products: list[str]) -> dict:
@@ -42,23 +41,7 @@ def get_reddit_signal(product_name: str) -> dict:
         'signal': 'high' if mention_count > 10 else 'med' if mention_count > 3 else 'low'
     }
 
-# ── 3. WALMART GAP CHECK ──────────────────────────────────────────
-def check_walmart_gap(product_name: str) -> dict:
-    url = "https://developer.api.walmart.com/api-proxy/service/affil/product/v2/search"
-    headers = {'WM_SEC.KEY_VERSION': '1', 'WM_CONSUMER.ID': WALMART_KEY}
-    params = {'query': product_name, 'numItems': 5}
-    try:
-        r = requests.get(url, headers=headers, params=params, timeout=5)
-        items = r.json().get('items', [])
-        count = len(items)
-        return {
-            'walmart_count': count,
-            'gap': 'high' if count == 0 else 'med' if count < 3 else 'low'
-        }
-    except:
-        return {'walmart_count': -1, 'gap': 'unknown'}
-
-# ── 4. RAINFOREST API (Amazon) ────────────────────────────────────
+# ── 3. RAINFOREST API (Amazon) ────────────────────────────────────
 def search_amazon_asin(query: str) -> str | None:
     """Step 4a: find the top ASIN for a product query"""
     params = {
@@ -115,20 +98,14 @@ def get_amazon_signals(asin: str) -> dict:
         'amazon_composite': amazon_composite,
     }
 
-# ── 5. ARBITRAGE SCORE ────────────────────────────────────────────
-def arbitrage_score(trend, reddit_signal, walmart_gap, amazon_composite) -> int:
-    trend_pts   = min(trend, 100) * 0.35
+# ── 4. ARBITRAGE SCORE ────────────────────────────────────────────
+def arbitrage_score(trend, reddit_signal, amazon_composite) -> int:
+    trend_pts = min(trend, 100) * 0.35
+    reddit_pts = {'high': 100, 'med': 50, 'low': 10}.get(reddit_signal, 0) * 0.20
+    amazon_pts = amazon_composite * 0.45
+    return round(trend_pts + reddit_pts + amazon_pts)
 
-    reddit_pts  = {'high': 100, 'med': 50, 'low': 10}.get(reddit_signal, 0) * 0.20
-
-    walmart_pts = {'high': 100, 'med': 50, 'low': 10,
-                   'unknown': 30}.get(walmart_gap, 0) * 0.15
-
-    amazon_pts  = amazon_composite * 0.30
-
-    return round(trend_pts + reddit_pts + walmart_pts + amazon_pts)
-
-# ── 6. MAIN PIPELINE ──────────────────────────────────────────────
+# ── 5. MAIN PIPELINE ──────────────────────────────────────────────
 PRODUCTS = {
     "mala hotpot noodles":          "mala hotpot instant noodles",
     "WeiLong latiao snack":         "WeiLong latiao spicy gluten snack",
@@ -153,7 +130,6 @@ def run_pipeline():
 
         trend   = trends.get(display_name, 0)
         reddit  = get_reddit_signal(display_name)
-        walmart = check_walmart_gap(display_name)
 
         # Amazon: 2 API calls per product (search + product detail)
         asin = search_amazon_asin(amazon_query)
@@ -166,7 +142,7 @@ def run_pipeline():
                       'in_stock': False, 'amazon_composite': 70}
 
      # --- 1. Base Score ---
-        score = arbitrage_score(trend, reddit['signal'], walmart['gap'], amazon['amazon_composite'])
+        score = arbitrage_score(trend, reddit['signal'], amazon['amazon_composite'])
 
         # --- 2. Check the trade risk ---
         trade_risk = flag_trade_risk(
@@ -194,7 +170,6 @@ def run_pipeline():
             'trend_score':      trend,
             'reddit_signal':    reddit['signal'],
             'reddit_mentions':  reddit['mentions'],
-            'walmart_gap':      walmart['gap'],
             'amazon_sellers':   amazon['seller_count'],
             'amazon_bsr':       amazon['bsr'],
             'amazon_rating':    amazon['rating'],
@@ -210,7 +185,7 @@ def run_pipeline():
     df = pd.DataFrame(results).sort_values('arbitrage_score', ascending=False)
     df.to_csv('arbitrage_results.csv', index=False)
     print("\n── FINAL RANKINGS ──")
-    print(df[['product', 'arbitrage_score', 'amazon_sellers', 'amazon_bsr', 'walmart_gap']].to_string(index=False))
+    print(df[['product', 'arbitrage_score', 'amazon_sellers', 'amazon_bsr', 'reddit_signal']].to_string(index=False))
     return df
 
 if __name__ == "__main__":

@@ -1,0 +1,41 @@
+{
+  "name": "trendscout-live",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "ports:kill": "for p in 5173 8787; do lsof -ti:$p 2>/dev/null | xargs kill -9 2>/dev/null; done; echo 'Ports 5173/8787 cleared (if anything was listening).'",
+    "dev": "npx concurrently -k \"npm run dev:server\" \"vite\"",
+    "dev:server": "tsx watch server/index.ts",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "start:server": "tsx server/index.ts",
+    "yami:trends:py": "python3 scripts/yami_trends.py"
+  },
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "express-async-errors": "^3.1.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.1.1",
+    "undici": "^7.25.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^9.1.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "tsx": "^4.19.2",
+    "typescript": "~5.6.2",
+    "vite": "^6.0.5"
+  }
+}

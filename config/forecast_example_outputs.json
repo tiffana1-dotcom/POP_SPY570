@@ -1,0 +1,45 @@
+{
+  "description": "Illustrative forecast objects (shape reference for demos; scores vary with calendar date and catalog).",
+  "examples": [
+    {
+      "asin": "B01HBUJECQ",
+      "future_opportunity_score": 72.4,
+      "forecast_label": "Rising Opportunity",
+      "relevant_upcoming_events": ["Spring", "Mother's Day"],
+      "seasonal_fit": "Strong",
+      "future_reasons": [
+        "Spring resets often reward floral, herbal, spring-fit, refreshing and lighter tea profiles.",
+        "Ratings and review volume add validation for shelf conversations."
+      ],
+      "buyer_action": "Worth prioritizing for assortment review: calendar fit plus solid listing validation.",
+      "forecast_confidence": "High",
+      "event_badges": ["Spring Fit", "Mother's Day Potential"]
+    },
+    {
+      "asin": "B005CD3K48",
+      "future_opportunity_score": 58.2,
+      "forecast_label": "Seasonal Fit",
+      "relevant_upcoming_events": ["Spring"],
+      "seasonal_fit": "Moderate",
+      "future_reasons": [
+        "Spring resets often reward floral, herbal, spring-fit, refreshing and lighter tea profiles."
+      ],
+      "buyer_action": "Consider a small buy or placement test if distribution slots align with the relevant season.",
+      "forecast_confidence": "Medium",
+      "event_badges": ["Spring Fit"]
+    },
+    {
+      "asin": "EXAMPLE-LOW-SIGNAL",
+      "future_opportunity_score": 38.0,
+      "forecast_label": "Low Near-Term Signal",
+      "relevant_upcoming_events": ["Spring"],
+      "seasonal_fit": "Limited",
+      "future_reasons": [
+        "Limited overlap with upcoming calendar drivers; treat as exploratory."
+      ],
+      "buyer_action": "Keep on watchlist; confirm velocity and promo plans before committing depth.",
+      "forecast_confidence": "Low",
+      "event_badges": []
+    }
+  ]
+}

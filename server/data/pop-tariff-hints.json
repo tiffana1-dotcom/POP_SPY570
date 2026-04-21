@@ -1,0 +1,9 @@
+{
+  "countryKeywords": [
+    { "match": "china", "label": "China" },
+    { "match": "p.r.c", "label": "China" },
+    { "match": "made in china", "label": "China" },
+    { "match": "product of china", "label": "China" }
+  ],
+  "note": "Heuristic flags for buyer review — not a legal determination. Extend list as trade policy changes."
+}

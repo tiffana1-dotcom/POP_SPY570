@@ -1,0 +1,33 @@
+{
+  "asOf": "2026-04-16T12:00:00.000Z",
+  "sourceLabel": "Yami.com — public catalog & marketing copy snapshot (refreshed periodically; presented as live pulse in-app)",
+  "trendingIngredients": [
+    "ginger",
+    "ginseng",
+    "kombucha",
+    "adaptogen",
+    "matcha",
+    "oolong",
+    "chrysanthemum",
+    "wolfberry",
+    "goji",
+    "collagen",
+    "probiotic",
+    "konjac",
+    "osmanthus",
+    "brown sugar",
+    "snow fungus",
+    "jujube"
+  ],
+  "categoryPulse": [
+    "functional beverages",
+    "herbal tea",
+    "Asian snacks",
+    "beauty-from-within",
+    "pantry staples"
+  ],
+  "lineAnchors": {
+    "ginger": "PoP ginger line (RTD teas, syrups, confection)",
+    "ginseng": "PoP ginseng wellness (shots, sticks, paired snacks)"
+  }
+}
